@@ -27,13 +27,6 @@ use Solarium\QueryType\Update\Result as UpdateResult;
 class BufferedDeleteLite extends AbstractBufferedUpdate
 {
     /**
-     * Buffered document ids and/or queries to delete.
-     *
-     * @var AbstractDelete[]
-     */
-    protected $buffer = [];
-
-    /**
      * Add a document id to delete.
      *
      * @param int|string $id
@@ -42,9 +35,9 @@ class BufferedDeleteLite extends AbstractBufferedUpdate
      */
     public function addDeleteById($id)
     {
-        $this->buffer[] = new DeleteById($id);
+        $this->buffer[$this->index++] = new DeleteById($id);
 
-        if (\count($this->buffer) === $this->options['buffersize']) {
+        if ($this->options['buffersize'] === $this->index) {
             $this->flush();
         }
 
@@ -76,9 +69,9 @@ class BufferedDeleteLite extends AbstractBufferedUpdate
      */
     public function addDeleteQuery(string $query)
     {
-        $this->buffer[] = new DeleteQuery($query);
+        $this->buffer[$this->index++] = new DeleteQuery($query);
 
-        if (\count($this->buffer) === $this->options['buffersize']) {
+        if ($this->options['buffersize'] === $this->index) {
             $this->flush();
         }
 
@@ -110,7 +103,7 @@ class BufferedDeleteLite extends AbstractBufferedUpdate
      */
     public function getDeletes(): array
     {
-        return $this->buffer;
+        return $this->getBuffer();
     }
 
     /**
@@ -120,12 +113,12 @@ class BufferedDeleteLite extends AbstractBufferedUpdate
      */
     public function flush()
     {
-        if (0 === \count($this->buffer)) {
+        if (0 === $this->index) {
             // nothing to do
             return false;
         }
 
-        $this->addBufferToQuery($this->buffer);
+        $this->addBufferToQuery($this->getDeletes());
         $result = $this->client->update($this->updateQuery, $this->getEndpoint());
         $this->clear();
 
@@ -145,7 +138,7 @@ class BufferedDeleteLite extends AbstractBufferedUpdate
      */
     public function commit(?bool $softCommit = null, ?bool $waitSearcher = null, ?bool $expungeDeletes = null): UpdateResult
     {
-        $this->addBufferToQuery($this->buffer);
+        $this->addBufferToQuery($this->getDeletes());
         $this->updateQuery->addCommit($softCommit, $waitSearcher, $expungeDeletes);
         $result = $this->client->update($this->updateQuery, $this->getEndpoint());
         $this->clear();

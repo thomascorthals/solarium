@@ -15,6 +15,7 @@ use Solarium\Exception\DomainException;
 use Solarium\Exception\InvalidArgumentException;
 use Solarium\QueryType\Update\Query\Query as UpdateQuery;
 use Solarium\QueryType\Update\Result as UpdateResult;
+use SplFixedArray;
 
 /**
  * Buffered update plugin base class.
@@ -40,9 +41,27 @@ abstract class AbstractBufferedUpdate extends AbstractPlugin
     /**
      * Buffer.
      *
-     * @var array
+     * @var SplFixedArray
      */
-    protected $buffer = [];
+    protected $buffer;
+
+    /**
+     * Current buffer index.
+     *
+     * @var int
+     */
+    protected $index;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __construct($options = null)
+    {
+        $this->buffer = new SplFixedArray();
+        $this->index = 0;
+
+        parent::__construct($options);
+    }
 
     /**
      * Set the endpoint for the updates.
@@ -107,7 +126,8 @@ abstract class AbstractBufferedUpdate extends AbstractPlugin
      */
     public function setBufferSize(int $size): self
     {
-        if (\count($this->buffer) >= $size) {
+        // SplFixedArray discards any values after the new size, flush first!
+        if ($this->index >= $size) {
             $this->flush();
         }
 
@@ -116,6 +136,7 @@ abstract class AbstractBufferedUpdate extends AbstractPlugin
         }
 
         $this->setOption('buffersize', $size);
+        $this->buffer->setSize($size);
 
         return $this;
     }
@@ -139,7 +160,11 @@ abstract class AbstractBufferedUpdate extends AbstractPlugin
      */
     public function getBuffer(): array
     {
-        return $this->buffer;
+        if ($this->options['buffersize'] === $this->index) {
+            return (array) $this->buffer;
+        }
+
+        return array_slice((array) $this->buffer, 0, $this->index);
     }
 
     /**
@@ -156,7 +181,8 @@ abstract class AbstractBufferedUpdate extends AbstractPlugin
         $this->updateQuery = $this->client->createUpdate();
         $this->updateQuery->setRequestFormat($requestFormat);
 
-        $this->buffer = [];
+        $this->buffer = new SplFixedArray($this->options['buffersize']);
+        $this->index = 0;
 
         return $this;
     }

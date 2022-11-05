@@ -440,7 +440,7 @@ class BufferedDeleteDummy extends BufferedDeleteLite
 {
     public function addUnknownDeleteType()
     {
-        $this->buffer[] = new DeleteDummy();
+        $this->buffer[$this->index++] = new DeleteDummy();
     }
 }
 

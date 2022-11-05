@@ -37,12 +37,12 @@ class BufferedAdd extends BufferedAddLite
      */
     public function addDocument(DocumentInterface $document)
     {
-        $this->buffer[] = $document;
+        $this->buffer[$this->index++] = $document;
 
         $event = new AddDocumentEvent($document);
         $this->client->getEventDispatcher()->dispatch($event);
 
-        if (\count($this->buffer) === $this->options['buffersize']) {
+        if ($this->options['buffersize'] === $this->index) {
             $this->flush();
         }
 
@@ -59,7 +59,7 @@ class BufferedAdd extends BufferedAddLite
      */
     public function flush(?bool $overwrite = null, ?int $commitWithin = null)
     {
-        if (0 === \count($this->buffer)) {
+        if (0 === $this->index) {
             // nothing to do
             return false;
         }
@@ -67,7 +67,7 @@ class BufferedAdd extends BufferedAddLite
         $overwrite = $overwrite ?? $this->getOverwrite();
         $commitWithin = $commitWithin ?? $this->getCommitWithin();
 
-        $event = new PreFlushEvent($this->buffer, $overwrite, $commitWithin);
+        $event = new PreFlushEvent($this->getDocuments(), $overwrite, $commitWithin);
         $this->client->getEventDispatcher()->dispatch($event);
 
         $command = new AddCommand();
@@ -107,7 +107,7 @@ class BufferedAdd extends BufferedAddLite
     {
         $overwrite = $overwrite ?? $this->getOverwrite();
 
-        $event = new PreCommitEvent($this->buffer, $overwrite, $softCommit, $waitSearcher, $expungeDeletes);
+        $event = new PreCommitEvent($this->getDocuments(), $overwrite, $softCommit, $waitSearcher, $expungeDeletes);
         $this->client->getEventDispatcher()->dispatch($event);
 
         $command = new AddCommand();

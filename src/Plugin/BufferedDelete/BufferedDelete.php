@@ -39,12 +39,12 @@ class BufferedDelete extends BufferedDeleteLite
     public function addDeleteById($id)
     {
         $delete = new DeleteById($id);
-        $this->buffer[] = $delete;
+        $this->buffer[$this->index++] = $delete;
 
         $event = new AddDeleteByIdEvent($delete);
         $this->client->getEventDispatcher()->dispatch($event);
 
-        if (\count($this->buffer) === $this->options['buffersize']) {
+        if ($this->options['buffersize'] === $this->index) {
             $this->flush();
         }
 
@@ -61,12 +61,12 @@ class BufferedDelete extends BufferedDeleteLite
     public function addDeleteQuery(string $query)
     {
         $delete = new DeleteQuery($query);
-        $this->buffer[] = $delete;
+        $this->buffer[$this->index++] = $delete;
 
         $event = new AddDeleteQueryEvent($delete);
         $this->client->getEventDispatcher()->dispatch($event);
 
-        if (\count($this->buffer) === $this->options['buffersize']) {
+        if ($this->options['buffersize'] === $this->index) {
             $this->flush();
         }
 
@@ -80,12 +80,12 @@ class BufferedDelete extends BufferedDeleteLite
      */
     public function flush()
     {
-        if (0 === \count($this->buffer)) {
+        if (0 === $this->index) {
             // nothing to do
             return false;
         }
 
-        $event = new PreFlushEvent($this->buffer);
+        $event = new PreFlushEvent($this->getDeletes());
         $this->client->getEventDispatcher()->dispatch($event);
 
         $this->addBufferToQuery($event->getBuffer());
@@ -111,7 +111,7 @@ class BufferedDelete extends BufferedDeleteLite
      */
     public function commit(?bool $softCommit = null, ?bool $waitSearcher = null, ?bool $expungeDeletes = null): UpdateResult
     {
-        $event = new PreCommitEvent($this->buffer, $softCommit, $waitSearcher, $expungeDeletes);
+        $event = new PreCommitEvent($this->getDeletes(), $softCommit, $waitSearcher, $expungeDeletes);
         $this->client->getEventDispatcher()->dispatch($event);
 
         $this->addBufferToQuery($event->getBuffer());

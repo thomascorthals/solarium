@@ -25,13 +25,6 @@ use Solarium\QueryType\Update\Result as UpdateResult;
 class BufferedAddLite extends AbstractBufferedUpdate
 {
     /**
-     * Buffered documents to add.
-     *
-     * @var DocumentInterface[]
-     */
-    protected $buffer = [];
-
-    /**
      * Set commitWithin time option.
      *
      * @param int $time
@@ -104,9 +97,9 @@ class BufferedAddLite extends AbstractBufferedUpdate
      */
     public function addDocument(DocumentInterface $document)
     {
-        $this->buffer[] = $document;
+        $this->buffer[$this->index++] = $document;
 
-        if (\count($this->buffer) === $this->options['buffersize']) {
+        if ($this->options['buffersize'] === $this->index) {
             $this->flush();
         }
 
@@ -138,7 +131,7 @@ class BufferedAddLite extends AbstractBufferedUpdate
      */
     public function getDocuments(): array
     {
-        return $this->buffer;
+        return $this->getBuffer();
     }
 
     /**
@@ -151,7 +144,7 @@ class BufferedAddLite extends AbstractBufferedUpdate
      */
     public function flush(?bool $overwrite = null, ?int $commitWithin = null)
     {
-        if (0 === \count($this->buffer)) {
+        if (0 === $this->index) {
             // nothing to do
             return false;
         }
@@ -160,7 +153,7 @@ class BufferedAddLite extends AbstractBufferedUpdate
         $commitWithin = $commitWithin ?? $this->getCommitWithin();
 
         $command = new AddCommand();
-        $command->setDocuments($this->buffer);
+        $command->setDocuments($this->getDocuments());
 
         if (null !== $overwrite) {
             $command->setOverwrite($overwrite);
@@ -194,7 +187,7 @@ class BufferedAddLite extends AbstractBufferedUpdate
         $overwrite = $overwrite ?? $this->getOverwrite();
 
         $command = new AddCommand();
-        $command->setDocuments($this->buffer);
+        $command->setDocuments($this->getDocuments());
 
         if (null !== $overwrite) {
             $command->setOverwrite($overwrite);
