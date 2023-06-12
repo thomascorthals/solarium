@@ -176,7 +176,7 @@ class Curl extends Configurable implements AdapterInterface, TimeoutAwareInterfa
     {
         if ('proxy' === $name) {
             $this->setProxy($value);
-            trigger_error('Setting proxy as an option is deprecated. Use setProxy() instead.', \E_USER_DEPRECATED);
+            trigger_error('Setting proxy as an option is deprecated and will be removed in Solarium 8. Use setProxy() instead.', \E_USER_DEPRECATED);
         }
 
         return parent::setOption($name, $value);
@@ -216,7 +216,7 @@ class Curl extends Configurable implements AdapterInterface, TimeoutAwareInterfa
 
         if (isset($this->options['proxy'])) {
             $this->setProxy($this->options['proxy']);
-            trigger_error('Setting proxy as an option is deprecated. Use setProxy() instead.', \E_USER_DEPRECATED);
+            trigger_error('Setting proxy as an option is deprecated and will be removed in Solarium 8. Use setProxy() instead.', \E_USER_DEPRECATED);
         }
     }
 

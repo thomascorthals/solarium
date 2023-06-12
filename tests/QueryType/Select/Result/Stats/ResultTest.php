@@ -158,20 +158,4 @@ class ResultTest extends TestCase
         $this->assertSame($this->stats['max'], $this->result->getMax());
         $this->assertSame($this->stats['mean'], $this->result->getMean());
     }
-
-    /**
-     * @deprecated
-     */
-    public function testGetValue()
-    {
-        $this->assertSame($this->stats['dummy'], $this->result->getValue('dummy'));
-    }
-
-    /**
-     * @deprecated
-     */
-    public function testGetValueUnknown()
-    {
-        $this->assertNull($this->result->getValue('unknown'));
-    }
 }

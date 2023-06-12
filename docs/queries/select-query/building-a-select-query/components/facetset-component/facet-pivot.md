@@ -37,7 +37,7 @@ $facetSet = $query->getFacetSet();
 // create two facet pivot instances
 $facet = $facetSet->createFacetPivot('cat-popularity-instock');
 $facet->addFields('cat,popularity,inStock');
-$facet->setMinCount(0);
+$facet->setPivotMinCount(0);
 
 $facet = $facetSet->createFacetPivot('popularity-cat');
 $facet->addFields('popularity,cat');

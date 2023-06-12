@@ -54,18 +54,4 @@ class Result
     {
         return $this->getStatValue('facets');
     }
-
-    /**
-     * Get value by stat name.
-     *
-     * @param string $stat
-     *
-     * @return mixed|null
-     *
-     * @deprecated Use getStatValue() instead
-     */
-    public function getValue(string $stat)
-    {
-        return $this->getStatValue($stat);
-    }
 }

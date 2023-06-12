@@ -21,7 +21,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ping queries set omitHeader=false by default
 
 ### Removed
-- Removed deprecated class constant Client::Version. Use Client::getVersion() instead.
+- Solarium\Client::VERSION, use Client::getVersion() instead
+- Solarium\Component\Facet\JsonTerms::SORT_COUNT, use SORT_COUNT_ASC or SORT_COUNT_DESC instead
+- Solarium\Component\Facet\JsonTerms::SORT_INDEX, use SORT_INDEX_ASC or SORT_INDEX_DESC instead
+- Solarium\Component\Facet\Pivot::setMinCount(), use Solarium\Component\FacetSet::setPivotMinCount() or Solarium\Component\Facet\Pivot::setPivotMinCount() instead
+- Solarium\Component\Result\Stats\FacetValue::getFacets()
+- Solarium\Component\Result\Stats\Result::getValue(), use getStatValue() instead
+- Solarium\Core\Query\Helper::cacheControl(), use Solarium\QueryType\Select\Query\FilterQuery::setCache() and setCost() instead
 
 ### Deprecated
 - Solarium\QueryType\Server\Collections\Result\CreateResult::getStatus(), use getCreateStatus() instead

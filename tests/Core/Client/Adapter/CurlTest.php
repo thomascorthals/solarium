@@ -37,7 +37,7 @@ class CurlTest extends TestCase
             throw new \Exception($errstr, $errno);
         }, \E_USER_DEPRECATED);
 
-        $this->expectExceptionMessage('Setting proxy as an option is deprecated. Use setProxy() instead.');
+        $this->expectExceptionMessage('Setting proxy as an option is deprecated and will be removed in Solarium 8. Use setProxy() instead.');
         $adapter = new Curl(['proxy' => 'proxy.example.org:1234']);
         $this->assertSame('proxy.example.org:1234', $adapter->getProxy());
 
@@ -50,7 +50,7 @@ class CurlTest extends TestCase
             throw new \Exception($errstr, $errno);
         }, \E_USER_DEPRECATED);
 
-        $this->expectExceptionMessage('Setting proxy as an option is deprecated. Use setProxy() instead.');
+        $this->expectExceptionMessage('Setting proxy as an option is deprecated and will be removed in Solarium 8. Use setProxy() instead.');
         $this->adapter->setOptions(['proxy' => 'proxy.example.org:5678']);
         $this->assertSame('proxy.example.org:5678', $this->adapter->getProxy());
 
@@ -63,7 +63,7 @@ class CurlTest extends TestCase
             throw new \Exception($errstr, $errno);
         }, \E_USER_DEPRECATED);
 
-        $this->expectExceptionMessage('Setting proxy as an option is deprecated. Use setProxy() instead.');
+        $this->expectExceptionMessage('Setting proxy as an option is deprecated and will be removed in Solarium 8. Use setProxy() instead.');
         $this->adapter->setOption('proxy', 'proxy.example.org:9012');
         $this->assertSame('proxy.example.org:9012', $this->adapter->getProxy());
 

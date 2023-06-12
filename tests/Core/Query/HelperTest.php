@@ -679,28 +679,6 @@ class HelperTest extends TestCase
         );
     }
 
-    /**
-     * @deprecated Will be removed in Solarium 6
-     */
-    public function testCacheControlWithCost()
-    {
-        $this->assertSame(
-            '{!cache=false cost=6}',
-            $this->helper->cacheControl(false, 6)
-        );
-    }
-
-    /**
-     * @deprecated Will be removed in Solarium 6
-     */
-    public function testCacheControlWithoutCost()
-    {
-        $this->assertSame(
-            '{!cache=true}',
-            $this->helper->cacheControl(true)
-        );
-    }
-
     public function testFilterControlCharacters()
     {
         $this->assertSame(

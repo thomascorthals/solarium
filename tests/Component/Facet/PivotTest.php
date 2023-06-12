@@ -49,15 +49,6 @@ class PivotTest extends TestCase
         );
     }
 
-    /**
-     * @deprecated
-     */
-    public function testSetAndGetMinCount()
-    {
-        $this->facet->setMinCount(5);
-        $this->assertSame(5, $this->facet->getMinCount());
-    }
-
     public function testSetAndGetPivotMinCount()
     {
         $this->facet->setPivotMinCount(5);

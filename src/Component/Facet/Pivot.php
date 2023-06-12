@@ -49,35 +49,6 @@ class Pivot extends AbstractFacet
     }
 
     /**
-     * Set the minimum number of documents that need to match in order for the facet to be included in results.
-     *
-     * @param int $minCount
-     *
-     * @return self Provides fluent interface
-     *
-     * @deprecated This method no longer has effect. Use {@link Solarium\Component\FacetSet::setPivotMinCount()} to
-     *    set the global minCount or {@link setPivotMinCount()} to set the minCount for specific pivot fields instead.
-     */
-    public function setMinCount(int $minCount): self
-    {
-        $this->setOption('mincount', $minCount);
-
-        return $this;
-    }
-
-    /**
-     * Get the minimum number of documents that need to match in order for the facet to be included in results.
-     *
-     * @return int|null
-     *
-     * @deprecated
-     */
-    public function getMinCount(): ?int
-    {
-        return $this->getOption('mincount');
-    }
-
-    /**
      * Set the facet limit.
      *
      * @param int $limit

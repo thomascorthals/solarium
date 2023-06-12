@@ -12,7 +12,6 @@ Helper methods for general use
 -   functionCall($name, $params = array())
 -   join($from, $to, $dereferenced = false)
 -   formatDate($input)
--   cacheControl($useCache, $cost)
 -   qparserTerm($field, $weight)
 
 See the API docs (linked at the bottom of this page) for more details.
