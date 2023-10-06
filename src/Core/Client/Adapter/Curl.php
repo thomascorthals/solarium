@@ -29,7 +29,7 @@ class Curl extends Configurable implements AdapterInterface, TimeoutAwareInterfa
     use ProxyAwareTrait;
 
     /**
-     * Execute a Solr request using the cURL Http.
+     * Execute a Solr request using the cURL library.
      *
      * @param Request  $request
      * @param Endpoint $endpoint
@@ -47,24 +47,25 @@ class Curl extends Configurable implements AdapterInterface, TimeoutAwareInterfa
      * @param \CurlHandle       $handle
      * @param string|false|null $httpResponse
      *
+     * @throws HttpException
+     *
      * @return Response
      */
     public function getResponse(\CurlHandle $handle, $httpResponse): Response
     {
-        if (false !== $httpResponse && null !== $httpResponse) {
-            $data = $httpResponse;
-            $info = curl_getinfo($handle);
-            $headers = [];
-            $headers[] = 'HTTP/1.1 '.$info['http_code'].' OK';
-        } else {
-            $headers = [];
-            $data = '';
+        // if false (from {@see curl_exec()}) or null (from {@see curl_multi_getcontent()})
+        // instead of response data it's a total failure
+        if (false === $httpResponse || null === $httpResponse) {
+            throw new HttpException(sprintf('HTTP request failed, %s', curl_error($handle)));
         }
 
-        $this->check($data, $headers, $handle);
+        $httpCode = curl_getinfo($handle, CURLINFO_RESPONSE_CODE);
+        $headers = [];
+        $headers[] = 'HTTP/1.1 '.$httpCode.' OK';
+
         curl_close($handle);
 
-        return new Response($data, $headers);
+        return new Response($httpResponse, $headers);
     }
 
     /**
@@ -152,24 +153,6 @@ class Curl extends Configurable implements AdapterInterface, TimeoutAwareInterfa
         }
 
         return $handler;
-    }
-
-    /**
-     * Check result of a request.
-     *
-     * @param string      $data
-     * @param array       $headers
-     * @param \CurlHandle $handle
-     *
-     * @throws HttpException
-     */
-    public function check($data, $headers, \CurlHandle $handle): void
-    {
-        // if there is no data and there are no headers it's a total failure,
-        // a connection to the host was impossible.
-        if (empty($data) && 0 === \count($headers)) {
-            throw new HttpException(sprintf('HTTP request failed, %s', curl_error($handle)));
-        }
     }
 
     public function setOption(string $name, $value): Configurable

@@ -79,24 +79,6 @@ class CurlTest extends TestCase
         $this->assertSame('bar', $this->adapter->getOption('foo'));
     }
 
-    public function testCheck()
-    {
-        $data = 'data';
-        $headers = ['X-dummy: data'];
-        $handle = curl_init();
-
-        // this should be ok, no exception
-        $this->adapter->check($data, $headers, $handle);
-
-        $data = '';
-        $headers = [];
-
-        $this->expectException(HttpException::class);
-        $this->adapter->check($data, $headers, $handle);
-
-        curl_close($handle);
-    }
-
     public function testExecute()
     {
         $headers = ['HTTP/1.0 200 OK'];
@@ -132,11 +114,9 @@ class CurlTest extends TestCase
         $handle = curl_init();
 
         $this->expectException(HttpException::class);
-        $response = $this->adapter->getResponse($handle, $httpResponse);
+        $this->adapter->getResponse($handle, $httpResponse);
 
         curl_close($handle);
-
-        $this->assertEquals(new Response('', []), $response);
     }
 
     /**
@@ -175,6 +155,20 @@ class CurlTest extends TestCase
         $request = new Request();
         $request->setMethod(Request::METHOD_POST);
         $request->setFileUpload($tmpfname);
+        $request->setIsServerRequest(true);
+        $endpoint = new Endpoint();
+
+        $handle = $this->adapter->createHandle($request, $endpoint);
+
+        $this->assertInstanceOf(\CurlHandle::class, $handle);
+
+        curl_close($handle);
+    }
+
+    public function testCreateHandleWithCustomRequestHeaders()
+    {
+        $request = new Request();
+        $request->addHeader('X-Header: value');
         $request->setIsServerRequest(true);
         $endpoint = new Endpoint();
 
