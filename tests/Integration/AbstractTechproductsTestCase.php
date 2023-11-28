@@ -207,8 +207,20 @@ abstract class AbstractTechproductsTestCase extends TestCase
     }
 
     /**
+     * This data provider can be used to test functional equivalence in parsing results
+     * from the same queries with different response writers.
+     */
+    public function responseWriterProvider(): array
+    {
+        return [
+            [AbstractQuery::WT_JSON],
+            [AbstractQuery::WT_PHPS],
+        ];
+    }
+
+    /**
      * This data provider should be used by all UpdateQuery tests that don't test request
-     * format specific Commands to ensure functional equivalance between the formats.
+     * format specific Commands to ensure functional equivalence between the formats.
      */
     public function updateRequestFormatProvider(): array
     {
@@ -218,9 +230,13 @@ abstract class AbstractTechproductsTestCase extends TestCase
         ];
     }
 
-    public function testPing()
+    /**
+     * @dataProvider responseWriterProvider
+     */
+    public function testPing(string $responseWriter)
     {
         $ping = self::$client->createPing();
+        $ping->setResponseWriter($responseWriter);
         $result = self::$client->ping($ping);
         $this->assertSame(0, $result->getStatus());
         $this->assertSame('OK', $result->getPingStatus());
@@ -232,9 +248,13 @@ abstract class AbstractTechproductsTestCase extends TestCase
         }
     }
 
-    public function testSelect(): SelectResult
+    /**
+     * @dataProvider responseWriterProvider
+     */
+    public function testSelect(string $responseWriter): SelectResult
     {
         $select = self::$client->createSelect();
+        $select->setResponseWriter($responseWriter);
         $select->setSorts(['id' => SelectQuery::SORT_ASC]);
         $result = self::$client->select($select);
         $this->assertSame(32, $result->getNumFound());
@@ -268,6 +288,13 @@ abstract class AbstractTechproductsTestCase extends TestCase
      */
     public function testJsonSerializeSelectResult(SelectResult $result)
     {
+        // we can only compare against the response body if it was written as JSON
+        if (AbstractQuery::WT_JSON !== $result->getQuery()->getResponseWriter()) {
+            $this->expectNotToPerformAssertions();
+
+            return;
+        }
+
         $expectedJson = $result->getResponse()->getBody();
 
         // this only calls SelectResult::jsonSerialize() which gets the document data from the parsed response
@@ -459,9 +486,13 @@ abstract class AbstractTechproductsTestCase extends TestCase
         $this->assertCount(0, $result);
     }
 
-    public function testRangeQueries()
+    /**
+     * @dataProvider responseWriterProvider
+     */
+    public function testRangeQueries(string $responseWriter)
     {
         $select = self::$client->createSelect();
+        $select->setResponseWriter($responseWriter);
 
         $select->setQuery(
             $select->getHelper()->rangeQuery('price', null, 80)
@@ -693,10 +724,13 @@ abstract class AbstractTechproductsTestCase extends TestCase
 
     /**
      * @see https://solr.apache.org/guide/solr/latest/query-guide/faceting.html#combining-stats-component-with-pivots
+     *
+     * @dataProvider responseWriterProvider
      */
-    public function testFacetPivotsWithStatsComponent()
+    public function testFacetPivotsWithStatsComponent(string $responseWriter)
     {
         $select = self::$client->createSelect();
+        $select->setResponseWriter($responseWriter);
 
         $facetSet = $select->getFacetSet();
         $facet = $facetSet->createFacetPivot('piv1');
