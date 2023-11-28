@@ -64,6 +64,7 @@ use Solarium\Tests\Integration\Query\CustomQueryInterfaceQuery;
 use Solarium\Tests\Integration\Query\CustomSelfQuery;
 use Solarium\Tests\Integration\Query\CustomStaticQuery;
 use Symfony\Contracts\EventDispatcher\Event;
+use TRegx\PhpUnit\DataProviders\DataProvider;
 
 abstract class AbstractTechproductsTestCase extends TestCase
 {
@@ -231,6 +232,18 @@ abstract class AbstractTechproductsTestCase extends TestCase
     }
 
     /**
+     * This data provider crosees {@see updateRequestFormatProvider()} with
+     * {@see responseWriterProvider()}.
+     */
+    public function crossRequestFormatResponseWriterProvider(): DataProvider
+    {
+        return DataProvider::cross(
+            $this->updateRequestFormatProvider(),
+            $this->responseWriterProvider(),
+        );
+    }
+
+    /**
      * @dataProvider responseWriterProvider
      */
     public function testPing(string $responseWriter)
@@ -251,7 +264,7 @@ abstract class AbstractTechproductsTestCase extends TestCase
     /**
      * @dataProvider responseWriterProvider
      */
-    public function testSelect(string $responseWriter): SelectResult
+    public function testSelect(string $responseWriter)
     {
         $select = self::$client->createSelect();
         $select->setResponseWriter($responseWriter);
@@ -277,23 +290,13 @@ abstract class AbstractTechproductsTestCase extends TestCase
             'GB18030TEST',
             'GBP',
             ], $ids);
-
-        return $result;
     }
 
-    /**
-     * @depends testSelect
-     *
-     * @param SelectResult $result
-     */
-    public function testJsonSerializeSelectResult(SelectResult $result)
+    public function testJsonSerializeSelectResult()
     {
-        // we can only compare against the response body if it was written as JSON
-        if (AbstractQuery::WT_JSON !== $result->getQuery()->getResponseWriter()) {
-            $this->expectNotToPerformAssertions();
-
-            return;
-        }
+        $select = self::$client->createSelect();
+        $select->setResponseWriter(AbstractQuery::WT_JSON);
+        $result = self::$client->select($select);
 
         $expectedJson = $result->getResponse()->getBody();
 
@@ -309,9 +312,9 @@ abstract class AbstractTechproductsTestCase extends TestCase
     /**
      * @see https://solr.apache.org/guide/the-standard-query-parser.html#escaping-special-characters
      *
-     * @dataProvider updateRequestFormatProvider
+     * @dataProvider crossRequestFormatResponseWriterProvider
      */
-    public function testEscapes(string $requestFormat)
+    public function testEscapes(string $requestFormat, string $responseWriter)
     {
         $escapeChars = [' ', '+', '-', '&&', '||', '!', '(', ')', '{', '}', '[', ']', '^', '"', '~', '*', '?', ':', '/', '\\'];
         $cat = [implode('', $escapeChars)];
@@ -322,6 +325,7 @@ abstract class AbstractTechproductsTestCase extends TestCase
 
         $update = self::$client->createUpdate();
         $update->setRequestFormat($requestFormat);
+        $update->setResponseWriter($responseWriter);
         $doc = $update->createDocument();
         $doc->setField('id', 'solarium-test-escapes');
         $doc->setField('name', 'Solarium Test Escapes');
@@ -332,6 +336,7 @@ abstract class AbstractTechproductsTestCase extends TestCase
 
         // check if stored correctly in index
         $select = self::$client->createSelect();
+        $select->setResponseWriter($responseWriter);
         $select->setQuery('id:%T1%', ['solarium-test-escapes']);
         $result = self::$client->select($select);
         $this->assertCount(1, $result);
@@ -363,13 +368,14 @@ abstract class AbstractTechproductsTestCase extends TestCase
     /**
      * @see https://github.com/solariumphp/solarium/issues/1104
      *
-     * @dataProvider updateRequestFormatProvider
+     * @dataProvider crossRequestFormatResponseWriterProvider
      */
-    public function testPhraseQuery(string $requestFormat)
+    public function testPhraseQuery(string $requestFormat, string $responseWriter)
     {
         $phrase = "^The 17\" O'Conner && O`Series \n OR a || 1%2 1~2 1*2 \r\n book? \r \twhat \\ text: }{ )( ][ - + // \n\r ok? end$";
 
         $update = self::$client->createUpdate();
+        $update->setResponseWriter($responseWriter);
         $update->setRequestFormat($requestFormat);
         $doc = $update->createDocument();
         $doc->setField('id', 'solarium-test-phrase');
@@ -391,6 +397,7 @@ abstract class AbstractTechproductsTestCase extends TestCase
 
         // check if stored correctly in index
         $select = self::$client->createSelect();
+        $select->setResponseWriter($responseWriter);
         $select->setQuery('id:solarium-test-phrase');
         $result = self::$client->select($select);
         $this->assertSame([$phrase], $result->getIterator()->current()->getFields()['cat']);
@@ -420,9 +427,9 @@ abstract class AbstractTechproductsTestCase extends TestCase
      * @see https://github.com/solariumphp/solarium/issues/974
      * @see https://solr.apache.org/guide/local-parameters-in-queries.html#basic-syntax-of-local-parameters
      *
-     * @dataProvider updateRequestFormatProvider
+     * @dataProvider crossRequestFormatResponseWriterProvider
      */
-    public function testLocalParamValueEscapes(string $requestFormat)
+    public function testLocalParamValueEscapes(string $requestFormat, string $responseWriter)
     {
         $categories = [
             'solarium-test-localparamvalue-escapes',
@@ -437,6 +444,7 @@ abstract class AbstractTechproductsTestCase extends TestCase
         ];
 
         $update = self::$client->createUpdate();
+        $update->setResponseWriter($responseWriter);
         $update->setRequestFormat($requestFormat);
         $doc = $update->createDocument();
         $doc->setField('id', 'solarium-test-localparamvalue-escapes');
@@ -447,6 +455,7 @@ abstract class AbstractTechproductsTestCase extends TestCase
         self::$client->update($update);
 
         $select = self::$client->createSelect();
+        $select->setResponseWriter($responseWriter);
         $select->setRows(0);
         $facetSet = $select->getFacetSet();
 
