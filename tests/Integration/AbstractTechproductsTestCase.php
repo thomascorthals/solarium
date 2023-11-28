@@ -5,7 +5,6 @@ namespace Solarium\Tests\Integration;
 use PHPUnit\Framework\TestCase;
 use Solarium\Component\ComponentAwareQueryInterface;
 use Solarium\Component\Highlighting\Highlighting;
-use Solarium\Component\QueryInterface;
 use Solarium\Component\QueryTraits\GroupingTrait;
 use Solarium\Component\QueryTraits\TermsTrait;
 use Solarium\Component\Result\Facet\Pivot\PivotItem;
@@ -60,9 +59,6 @@ use Solarium\QueryType\Update\Query\Query as UpdateQuery;
 use Solarium\QueryType\Update\RequestBuilder\Xml as XmlUpdateRequestBuilder;
 use Solarium\Support\Utility;
 use Solarium\Tests\Integration\Plugin\EventTimer;
-use Solarium\Tests\Integration\Query\CustomQueryInterfaceQuery;
-use Solarium\Tests\Integration\Query\CustomSelfQuery;
-use Solarium\Tests\Integration\Query\CustomStaticQuery;
 use Symfony\Contracts\EventDispatcher\Event;
 
 abstract class AbstractTechproductsTestCase extends TestCase
@@ -210,7 +206,7 @@ abstract class AbstractTechproductsTestCase extends TestCase
      * This data provider should be used by all UpdateQuery tests that don't test request
      * format specific Commands to ensure functional equivalance between the formats.
      */
-    public function updateRequestFormatProvider(): array
+    public static function updateRequestFormatProvider(): array
     {
         return [
             [UpdateQuery::REQUEST_FORMAT_XML],
@@ -5104,7 +5100,7 @@ abstract class AbstractTechproductsTestCase extends TestCase
         $this->assertFalse($result->getWasSuccessful());
     }
 
-    public function managedResourcesSolr6853Provider(): array
+    public static function managedResourcesSolr6853Provider(): array
     {
         $term = 'test-:?#[]@% ';
         $data = [];
@@ -5179,32 +5175,6 @@ abstract class AbstractTechproductsTestCase extends TestCase
         }
 
         self::$client->removePlugin('eventtimer');
-    }
-
-    /**
-     * Test the various return types that are valid for custom query classes that
-     * override the {@see \Solarium\Component\QueryTrait::setQuery()} method.
-     *
-     * If this test throws a fatal error, the return type of the parent might no
-     * longer be backward compatible with existing code that overrides it.
-     *
-     * @see https://github.com/solariumphp/solarium/issues/1097
-     *
-     * @dataProvider customQueryClassProvider
-     */
-    public function testCustomQueryClassSetQueryReturnType(string $queryClass)
-    {
-        $query = new $queryClass();
-        $this->assertInstanceOf(QueryInterface::class, $query->setQuery('*:*'));
-    }
-
-    public function customQueryClassProvider(): array
-    {
-        return [
-            [CustomStaticQuery::class],
-            [CustomSelfQuery::class],
-            [CustomQueryInterfaceQuery::class],
-        ];
     }
 }
 

@@ -14,7 +14,7 @@ jobs:
 
         strategy:
             matrix:
-                php: [8.0, 8.1, 8.2, 8.3]
+                php: [8.1, 8.2, 8.3]
                 solr: [7, 8, 9]
                 mode: [cloud, server]
 
@@ -80,7 +80,7 @@ jobs:
             - name: Run tests
               run: |
                 vendor/bin/phpstan analyze src/ tests/ --level=1 --memory-limit=1G
-                vendor/bin/phpunit -c phpunit.xml --exclude-group skip_for_solr_${{ matrix.mode }} -v --coverage-clover build/logs/clover.xml
+                vendor/bin/phpunit -c phpunit.xml --exclude-group skip_for_solr_${{ matrix.mode }} --coverage-clover build/logs/clover.xml
 
             - name: Execute examples
               run: |

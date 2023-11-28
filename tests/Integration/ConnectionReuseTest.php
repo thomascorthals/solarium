@@ -246,7 +246,7 @@ class ConnectionReuseTest extends TestCase
         $this->assertContains(\count($connections), [$expectedCount, $expectedCount + 1]);
     }
 
-    public function createAdapterProvider(): array
+    public static function createAdapterProvider(): array
     {
         return [
             'without reuse' => ['createWithCurlAdapter', 5],
