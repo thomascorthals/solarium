@@ -5192,15 +5192,21 @@ abstract class AbstractTechproductsTestCase extends TestCase
             $nameSingleEncoded = $uniqid.'test-%23%5B%5D%40%25%20';
             $nameDoubleEncoded = $uniqid.'test-%2523%255B%255D%2540%2525%2520';
         } else {
-            $name = $uniqid.'test-:/?#[]@% ';
-            $nameSingleEncoded = $uniqid.'test-%3A%2F%3F%23%5B%5D%40%25%20';
-            $nameDoubleEncoded = $uniqid.'test-%253A%252F%253F%2523%255B%255D%2540%2525%2520';
+            $name = $uniqid.'test-:?#[]@% ';
+            $nameSingleEncoded = $uniqid.'test-%3A%3F%23%5B%5D%40%25%20';
+            $nameDoubleEncoded = $uniqid.'test-%253A%253F%2523%255B%255D%2540%2525%2520';
         }
 
-        // unlike name, term can't contain a slash (SOLR-6853)
-        $term = 'test-:?#[]@% ';
-        $termSingleEncoded = 'test-%3A%3F%23%5B%5D%40%25%20';
-        $termDoubleEncoded = 'test-%253A%253F%2523%255B%255D%2540%2525%2520';
+        // term can contain a slash since Solr 9.4.1 (SOLR-6853)
+        if (9 <= self::$solrVersion) {
+            $term = 'test-:/?#[]@% ';
+            $termSingleEncoded = 'test-%3A%2F%3F%23%5B%5D%40%25%20';
+            $termDoubleEncoded = 'test-%253A%252F%253F%2523%255B%255D%2540%2525%2520';
+        } else {
+            $term = 'test-:?#[]@% ';
+            $termSingleEncoded = 'test-%3A%3F%23%5B%5D%40%25%20';
+            $termDoubleEncoded = 'test-%253A%253F%2523%255B%255D%2540%2525%2520';
+        }
 
         $compliantRequestBuilder = new CompliantManagedResourceRequestBuilder();
         $actualRequestBuilder = new ResourceRequestBuilder();
