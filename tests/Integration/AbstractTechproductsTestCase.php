@@ -227,7 +227,7 @@ abstract class AbstractTechproductsTestCase extends TestCase
      * This data provider can be used to test functional equivalence in parsing results
      * from the same queries with different response writers.
      */
-    public function responseWriterProvider(): array
+    public static function responseWriterProvider(): array
     {
         return [
             [AbstractQuery::WT_JSON],
@@ -239,7 +239,7 @@ abstract class AbstractTechproductsTestCase extends TestCase
      * This data provider should be used by all UpdateQuery tests that don't test request
      * format specific Commands to ensure functional equivalence between the formats.
      */
-    public function updateRequestFormatProvider(): array
+    public static function updateRequestFormatProvider(): array
     {
         return [
             [UpdateQuery::REQUEST_FORMAT_XML],
@@ -251,11 +251,11 @@ abstract class AbstractTechproductsTestCase extends TestCase
      * This data provider crosses {@see updateRequestFormatProvider()} with
      * {@see responseWriterProvider()}.
      */
-    public function crossRequestFormatResponseWriterProvider(): DataProvider
+    public static function crossRequestFormatResponseWriterProvider(): DataProvider
     {
         return DataProvider::cross(
-            $this->updateRequestFormatProvider(),
-            $this->responseWriterProvider(),
+            self::updateRequestFormatProvider(),
+            self::responseWriterProvider(),
         );
     }
 
@@ -832,7 +832,7 @@ abstract class AbstractTechproductsTestCase extends TestCase
         );
     }
 
-    public function crossHighlightingMethodResponseWriterProvider(): DataProvider
+    public static function crossHighlightingMethodResponseWriterProvider(): DataProvider
     {
         $highlightingMethods = [
             [Highlighting::METHOD_UNIFIED],
@@ -842,7 +842,7 @@ abstract class AbstractTechproductsTestCase extends TestCase
 
         return DataProvider::cross(
             $highlightingMethods,
-            $this->responseWriterProvider(),
+            self::responseWriterProvider(),
         );
     }
 
