@@ -38,34 +38,26 @@ class Grouping extends AbstractComponent
 
     /**
      * Component type.
-     *
-     * @var string
      */
-    protected $type = ComponentAwareQueryInterface::COMPONENT_GROUPING;
+    protected string $type = ComponentAwareQueryInterface::COMPONENT_GROUPING;
 
     /**
      * Default options.
-     *
-     * @var array
      */
-    protected $options = [
+    protected array $options = [
         'resultquerygroupclass' => QueryGroup::class,
         'resultvaluegroupclass' => ValueGroup::class,
     ];
 
     /**
      * Fields for grouping.
-     *
-     * @var array
      */
-    protected $fields = [];
+    protected array $fields = [];
 
     /**
      * Queries for grouping.
-     *
-     * @var array
      */
-    protected $queries = [];
+    protected array $queries = [];
 
     /**
      * Get component type.
@@ -575,7 +567,7 @@ class Grouping extends AbstractComponent
      *            Options that set a list of fields need additional setup work
      *            because they can be an array or a comma separated string.}
      */
-    protected function init()
+    protected function init(): void
     {
         foreach ($this->options as $name => $value) {
             switch ($name) {

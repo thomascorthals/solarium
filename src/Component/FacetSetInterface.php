@@ -77,12 +77,12 @@ interface FacetSetInterface
      *
      * @return self Provides fluent interface
      */
-    public function addFacet($facet): self;
+    public function addFacet(FacetInterface|array $facet): self;
 
     /**
      * Add multiple facets.
      *
-     * @param array $facets
+     * @param FacetInterface[]|array[] $facets
      *
      * @return self Provides fluent interface
      */
@@ -113,7 +113,7 @@ interface FacetSetInterface
      *
      * @return self Provides fluent interface
      */
-    public function removeFacet($facet): self;
+    public function removeFacet(string|FacetInterface $facet): self;
 
     /**
      * Remove all facets.
@@ -127,7 +127,7 @@ interface FacetSetInterface
      *
      * This overwrites any existing facets
      *
-     * @param FacetInterface[] $facets
+     * @param FacetInterface[]|array[] $facets
      *
      * @return self Provides fluent interface
      */

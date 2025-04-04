@@ -21,19 +21,15 @@ class QueryElevation extends AbstractComponent
 {
     /**
      * Default options.
-     *
-     * @var array
      */
-    protected $options = [
+    protected array $options = [
         'transformers' => '[elevated]',
     ];
 
     /**
      * Document transformers.
-     *
-     * @var array
      */
-    protected $transformers = [];
+    protected array $transformers = [];
 
     /**
      * Get component type.
@@ -367,7 +363,7 @@ class QueryElevation extends AbstractComponent
      *            Options that set a list of ids need additional setup work
      *            because they can be an array or a comma separated string.}
      */
-    protected function init()
+    protected function init(): void
     {
         foreach ($this->options as $name => $value) {
             switch ($name) {

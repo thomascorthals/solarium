@@ -43,10 +43,8 @@ class Loadbalancer extends AbstractPlugin
 {
     /**
      * Default options.
-     *
-     * @var array
      */
-    protected $options = [
+    protected array $options = [
         'failoverenabled' => false,
         'failovermaxretries' => 1,
         'failoverstatuscodes' => [],
@@ -57,14 +55,12 @@ class Loadbalancer extends AbstractPlugin
      *
      * @var Endpoint[]
      */
-    protected $endpoints = [];
+    protected array $endpoints = [];
 
     /**
      * Query types that are blocked from loadbalancing.
-     *
-     * @var array
      */
-    protected $blockedQueryTypes = [
+    protected array $blockedQueryTypes = [
         Client::QUERY_EXTRACT => true,
         Client::QUERY_UPDATE => true,
     ];
@@ -73,48 +69,36 @@ class Loadbalancer extends AbstractPlugin
      * Last used endpoint key.
      *
      * The value can be null if no queries have been executed, or if the last executed query didn't use loadbalancing.
-     *
-     * @var string|null
      */
-    protected $lastEndpoint;
+    protected ?string $lastEndpoint = null;
 
     /**
      * Endpoint key to use for next query (overrules randomizer).
-     *
-     * @var string
      */
-    protected $nextEndpoint;
+    protected ?string $nextEndpoint = null;
 
     /**
      * Default endpoint key.
      *
      * This endpoint is used for queries that cannot be loadbalanced
      * (for instance update queries that need to go to the master)
-     *
-     * @var string
      */
-    protected $defaultEndpoint;
+    protected ?string $defaultEndpoint = null;
 
     /**
      * Pool of endpoint keys to use for requests.
-     *
-     * @var WeightedRandomChoice
      */
-    protected $randomizer;
+    protected ?WeightedRandomChoice $randomizer = null;
 
     /**
      * Query type.
-     *
-     * @var string
      */
-    protected $queryType;
+    protected string $queryType;
 
     /**
      * Used for failover mechanism.
-     *
-     * @var array
      */
-    protected $endpointExcludes;
+    protected array $endpointExcludes;
 
     /**
      * Set failover enabled option.
@@ -371,7 +355,7 @@ class Loadbalancer extends AbstractPlugin
      *
      * @return self Provides fluent interface
      */
-    public function setForcedEndpointForNextQuery($endpoint): self
+    public function setForcedEndpointForNextQuery(string|Endpoint|null $endpoint): self
     {
         if (!\is_string($endpoint)) {
             $endpoint = $endpoint->getKey();
@@ -638,7 +622,7 @@ class Loadbalancer extends AbstractPlugin
      * {@internal Several options need some extra checks or setup work,
      *            for these options the setters are called.}
      */
-    protected function init()
+    protected function init(): void
     {
         foreach ($this->options as $name => $value) {
             switch ($name) {
@@ -660,7 +644,7 @@ class Loadbalancer extends AbstractPlugin
      *
      * Register event listeners.
      */
-    protected function initPluginType()
+    protected function initPluginType(): void
     {
         $dispatcher = $this->client->getEventDispatcher();
         if (is_subclass_of($dispatcher, '\Symfony\Component\EventDispatcher\EventDispatcherInterface')) {
@@ -675,7 +659,7 @@ class Loadbalancer extends AbstractPlugin
      *
      * Unregister event listeners.
      */
-    public function deinitPlugin()
+    public function deinitPlugin(): void
     {
         $dispatcher = $this->client->getEventDispatcher();
         if (is_subclass_of($dispatcher, '\Symfony\Component\EventDispatcher\EventDispatcherInterface')) {

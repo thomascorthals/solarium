@@ -23,10 +23,8 @@ class DisMax extends AbstractComponent
 {
     /**
      * Default options.
-     *
-     * @var array
      */
-    protected $options = [
+    protected array $options = [
         'queryparser' => 'dismax',
     ];
 
@@ -35,7 +33,7 @@ class DisMax extends AbstractComponent
      *
      * @var BoostQuery[]
      */
-    protected $boostQueries = [];
+    protected array $boostQueries = [];
 
     /**
      * Get component type.

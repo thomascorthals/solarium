@@ -20,17 +20,13 @@ class Delete extends AbstractCommand
 {
     /**
      * Ids to delete.
-     *
-     * @var array
      */
-    protected $ids = [];
+    protected array $ids = [];
 
     /**
      * Delete queries.
-     *
-     * @var array
      */
-    protected $queries = [];
+    protected array $queries = [];
 
     /**
      * Get command type.

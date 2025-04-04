@@ -106,10 +106,8 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
 
     /**
      * Default options.
-     *
-     * @var array
      */
-    protected $options = [
+    protected array $options = [
         'handler' => 'select',
         'resultclass' => Result::class,
         'documentclass' => Document::class,
@@ -122,31 +120,25 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
 
     /**
      * Tags for this query.
-     *
-     * @var array
      */
-    protected $tags = [];
+    protected array $tags = [];
 
     /**
      * Fields to fetch.
-     *
-     * @var array
      */
-    protected $fields = [];
+    protected array $fields = [];
 
     /**
      * Items to sort on.
-     *
-     * @var array
      */
-    protected $sorts = [];
+    protected array $sorts = [];
 
     /**
      * Filterqueries.
      *
      * @var FilterQuery[]
      */
-    protected $filterQueries = [];
+    protected array $filterQueries = [];
 
     /**
      * @param array|null $options
@@ -776,7 +768,7 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
      *
      * @throws OutOfBoundsException
      *
-     * @return $this
+     * @return self Provides fluent interface
      */
     public function removeTag(string $tag): self
     {
@@ -814,7 +806,7 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
      *
      * @throws OutOfBoundsException
      *
-     * @return $this
+     * @return self Provides fluent interface
      */
     public function setTags(array $tags): self
     {
@@ -1050,7 +1042,7 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
      * {@internal Several options need some extra checks or setup work,
      *            for these options the setters are called.}
      */
-    protected function init()
+    protected function init(): void
     {
         foreach ($this->options as $name => $value) {
             switch ($name) {

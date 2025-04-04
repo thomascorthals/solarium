@@ -9,10 +9,7 @@ use Solarium\QueryType\Select\Query\Query;
 
 class TermsTest extends TestCase
 {
-    /**
-     * @var Terms
-     */
-    protected $terms;
+    protected Terms $terms;
 
     public function setUp(): void
     {

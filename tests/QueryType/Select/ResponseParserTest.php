@@ -58,22 +58,13 @@ class ResponseParserTest extends TestCase
         $this->assertEquals($components, $result['components']);
     }
 
-    public function testParseWithoutScore()
+    /**
+     * @dataProvider dataWithoutScoreProvider
+     *
+     * @param array $data
+     */
+    public function testParseWithoutScore(array $data)
     {
-        $data = [
-            'response' => [
-                'docs' => [
-                    ['fieldA' => 1, 'fieldB' => 'Test'],
-                    ['fieldA' => 2, 'fieldB' => 'Test2'],
-                ],
-                'numFound' => 503,
-            ],
-            'responseHeader' => [
-                'status' => 1,
-                'QTime' => 13,
-            ],
-        ];
-
         $query = new Query(['documentclass' => Document::class]);
         $query->getFacetSet();
 
@@ -101,6 +92,31 @@ class ResponseParserTest extends TestCase
             Query::COMPONENT_FACETSET => new FacetSet([]),
         ];
         $this->assertEquals($components, $result['components']);
+    }
+
+    public static function dataWithoutScoreProvider(): array
+    {
+        $data = [
+            'response' => [
+                'docs' => [
+                    ['fieldA' => 1, 'fieldB' => 'Test'],
+                    ['fieldA' => 2, 'fieldB' => 'Test2'],
+                ],
+                'numFound' => 503,
+            ],
+            'responseHeader' => [
+                'status' => 1,
+                'QTime' => 13,
+            ],
+        ];
+
+        $dataNAN = $data;
+        $dataNAN['response']['maxScore'] = 'NaN';
+
+        return [
+            'omitted maxScore' => [$data],
+            '"NaN" maxScore' => [$dataNAN],
+        ];
     }
 
     public function testParseWithInvalidDocumentClass()

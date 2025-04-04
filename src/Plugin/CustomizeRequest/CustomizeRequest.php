@@ -28,7 +28,7 @@ class CustomizeRequest extends AbstractPlugin
      *
      * @var Customization[]
      */
-    protected $customizations = [];
+    protected array $customizations = [];
 
     /**
      * Create a Customization instance.
@@ -238,7 +238,7 @@ class CustomizeRequest extends AbstractPlugin
     /**
      * Initialize options.
      */
-    protected function init()
+    protected function init(): void
     {
         foreach ($this->options as $name => $value) {
             switch ($name) {
@@ -254,7 +254,7 @@ class CustomizeRequest extends AbstractPlugin
      *
      * Register event listeners.
      */
-    protected function initPluginType()
+    protected function initPluginType(): void
     {
         $dispatcher = $this->client->getEventDispatcher();
         if (is_subclass_of($dispatcher, '\Symfony\Component\EventDispatcher\EventDispatcherInterface')) {
@@ -267,7 +267,7 @@ class CustomizeRequest extends AbstractPlugin
      *
      * Unregister event listeners.
      */
-    public function deinitPlugin()
+    public function deinitPlugin(): void
     {
         $dispatcher = $this->client->getEventDispatcher();
         if (is_subclass_of($dispatcher, '\Symfony\Component\EventDispatcher\EventDispatcherInterface')) {

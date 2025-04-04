@@ -114,7 +114,7 @@ trait MoreLikeThisTrait
      *
      * @param int $maximumpercentage A percentage between 0 and 100
      *
-     * @throws \Solarium\Exception\DomainException
+     * @throws DomainException
      *
      * @return MoreLikeThisInterface Provides fluent interface
      */

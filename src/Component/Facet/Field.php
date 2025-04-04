@@ -22,10 +22,8 @@ class Field extends AbstractFacet implements FieldValueParametersInterface
 
     /**
      * Default options.
-     *
-     * @var array
      */
-    protected $options = [
+    protected array $options = [
         'field' => 'id',
     ];
 

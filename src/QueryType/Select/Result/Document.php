@@ -22,10 +22,8 @@ class Document extends AbstractDocument
 {
     /**
      * All fields in this document.
-     *
-     * @var array
      */
-    protected $fields;
+    protected array $fields;
 
     /**
      * Constructor.

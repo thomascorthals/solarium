@@ -22,17 +22,13 @@ class Document implements DocumentInterface, \IteratorAggregate, \Countable, \Ar
 {
     /**
      * Original document.
-     *
-     * @var SelectDocument
      */
-    protected $document;
+    protected SelectDocument $document;
 
     /**
      * Is this document marked as a low score?
-     *
-     * @var bool
      */
-    protected $marked;
+    protected bool $marked;
 
     /**
      * Constructor.

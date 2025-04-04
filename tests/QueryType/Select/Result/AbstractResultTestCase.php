@@ -9,20 +9,20 @@ use Solarium\QueryType\Select\Result\Result;
 
 abstract class AbstractResultTestCase extends TestCase
 {
+    protected Result $result;
+
+    protected int $numFound;
+
+    protected float $maxScore;
+
+    protected ?string $nextCursorMark;
+
     /**
-     * @var SelectDummy
+     * @var Document[]
      */
-    protected $result;
+    protected array $docs;
 
-    protected $numFound;
-
-    protected $maxScore;
-
-    protected $nextCursorMark;
-
-    protected $docs;
-
-    protected $components;
+    protected array $components;
 
     protected $facetSet;
 
@@ -282,7 +282,7 @@ abstract class AbstractResultTestCase extends TestCase
 
 class SelectDummy extends Result
 {
-    protected $parsed = true;
+    protected bool $parsed = true;
 
     public function __construct($status, $queryTime, $numfound, $maxscore, $nextcursormark, $docs, $components)
     {

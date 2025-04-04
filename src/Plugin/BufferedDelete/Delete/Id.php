@@ -18,10 +18,8 @@ class Id extends AbstractDelete
 {
     /**
      * Document id to delete.
-     *
-     * @var int|string
      */
-    protected $id;
+    protected int|string $id;
 
     /**
      * Constructor.

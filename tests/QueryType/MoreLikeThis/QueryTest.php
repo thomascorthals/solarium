@@ -21,7 +21,7 @@ use Solarium\QueryType\Select\Query\FilterQuery;
 
 class QueryTest extends TestCase
 {
-    protected $query;
+    protected Query $query;
 
     public function setUp(): void
     {

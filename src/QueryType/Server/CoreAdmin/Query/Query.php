@@ -86,10 +86,8 @@ class Query extends AbstractServerQuery
 
     /**
      * Action types.
-     *
-     * @var array
      */
-    protected $actionTypes = [
+    protected array $actionTypes = [
         self::ACTION_CREATE => Create::class,
         self::ACTION_MERGE_INDEXES => MergeIndexes::class,
         self::ACTION_RELOAD => Reload::class,
@@ -104,10 +102,8 @@ class Query extends AbstractServerQuery
 
     /**
      * Default options.
-     *
-     * @var array
      */
-    protected $options = [
+    protected array $options = [
         'handler' => 'admin/cores',
     ];
 

@@ -12,10 +12,7 @@ use Solarium\QueryType\Update\Query\Query as UpdateQuery;
 
 class QueryTypeTest extends TestCase
 {
-    /**
-     * @var TestStubResult
-     */
-    protected $result;
+    protected TestStubResult $result;
 
     public function setUp(): void
     {
@@ -93,7 +90,7 @@ class TestStubQuery extends SelectQuery
 
 class TestStubResult extends QueryTypeResult
 {
-    public $parseCount = 0;
+    public int $parseCount = 0;
 
     protected $dummyvar;
 

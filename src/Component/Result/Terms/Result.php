@@ -16,17 +16,13 @@ class Result implements \IteratorAggregate, \Countable
 {
     /**
      * Terms results.
-     *
-     * @var array
      */
-    protected $results;
+    protected array $results;
 
     /**
      * Terms flat results.
-     *
-     * @var array
      */
-    protected $all;
+    protected array $all;
 
     /**
      * Constructor.

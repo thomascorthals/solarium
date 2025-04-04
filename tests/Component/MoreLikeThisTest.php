@@ -9,10 +9,7 @@ use Solarium\Exception\DomainException;
 
 class MoreLikeThisTest extends TestCase
 {
-    /**
-     * @var MoreLikeThis
-     */
-    protected $mlt;
+    protected MoreLikeThis $mlt;
 
     public function setUp(): void
     {

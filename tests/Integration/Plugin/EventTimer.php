@@ -12,20 +12,17 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 class EventTimer extends AbstractPlugin
 {
-    /**
-     * @var int|float
-     */
-    protected $start;
+    protected int|float $start;
 
     /**
      * @var array[]
      */
-    protected $log = [];
+    protected array $log = [];
 
     /**
      * @var Event[]
      */
-    protected $events = [];
+    protected array $events = [];
 
     /**
      * Plugin init function.
@@ -56,7 +53,7 @@ class EventTimer extends AbstractPlugin
      *
      * Unregister event listeners.
      */
-    public function deinitPlugin()
+    public function deinitPlugin(): void
     {
         $dispatcher = $this->client->getEventDispatcher();
         $dispatcher->removeListener(Events::PRE_CREATE_REQUEST, $this->events['preCrReq']);

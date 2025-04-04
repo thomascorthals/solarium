@@ -29,10 +29,8 @@ trait JsonFacetTrait
 
     /**
      * Facet type mapping.
-     *
-     * @var array
      */
-    protected $facetTypes = [
+    protected array $facetTypes = [
         FacetSetInterface::JSON_FACET_TERMS => 'Solarium\Component\Facet\JsonTerms',
         FacetSetInterface::JSON_FACET_QUERY => 'Solarium\Component\Facet\JsonQuery',
         FacetSetInterface::JSON_FACET_RANGE => 'Solarium\Component\Facet\JsonRange',

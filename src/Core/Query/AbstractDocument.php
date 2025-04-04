@@ -16,10 +16,8 @@ abstract class AbstractDocument implements DocumentInterface, \IteratorAggregate
 {
     /**
      * All fields in this document.
-     *
-     * @var array
      */
-    protected $fields;
+    protected array $fields;
 
     /**
      * @param mixed $name

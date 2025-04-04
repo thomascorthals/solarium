@@ -32,10 +32,8 @@ class Query extends SelectQuery implements MoreLikeThisInterface
 
     /**
      * Default options.
-     *
-     * @var array
      */
-    protected $options = [
+    protected array $options = [
         'handler' => 'mlt',
         'resultclass' => Result::class,
         'documentclass' => Document::class,

@@ -18,10 +18,8 @@ trait SpellcheckTrait
 {
     /**
      * Used to further customize collation parameters.
-     *
-     * @var array
      */
-    protected $collateParams = [];
+    protected array $collateParams = [];
 
     /**
      * Set build option.

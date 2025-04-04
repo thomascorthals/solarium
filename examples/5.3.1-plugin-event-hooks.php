@@ -6,11 +6,11 @@ use Solarium\Core\Event\Events;
 // this very simple plugin shows a timing for each event and display some request debug info
 class BasicDebug extends Solarium\Core\Plugin\AbstractPlugin
 {
-    protected $start;
-    protected $output = array();
+    protected float $start;
+    protected array $output = array();
 
     // This method is called when the plugin is registered with the client.
-    protected function initPluginType()
+    protected function initPluginType(): void
     {
         $this->start = microtime(true);
 
@@ -28,7 +28,7 @@ class BasicDebug extends Solarium\Core\Plugin\AbstractPlugin
     }
 
     // This method is called if the plugin is removed from the client.
-    public function deinitPlugin()
+    public function deinitPlugin(): void
     {
         $dispatcher = $this->client->getEventDispatcher();
         $dispatcher->removeListener(Events::PRE_CREATE_REQUEST, array($this, 'preCreateRequest'));

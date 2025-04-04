@@ -20,10 +20,7 @@ use Solarium\QueryType\Select\Query\Query;
 
 class FacetSetTest extends TestCase
 {
-    /**
-     * @var FacetSet
-     */
-    protected $facetSet;
+    protected FacetSet $facetSet;
 
     public function setUp(): void
     {

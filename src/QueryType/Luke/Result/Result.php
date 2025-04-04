@@ -21,55 +21,28 @@ use Solarium\QueryType\Luke\Result\Schema\Schema;
  */
 class Result extends BaseResult
 {
-    /**
-     * @var array
-     */
-    protected $index;
+    protected array $index;
 
-    /**
-     * @var array
-     */
-    protected $schema;
+    protected array $schema;
 
-    /**
-     * @var array
-     */
-    protected $doc;
+    protected array $doc;
 
-    /**
-     * @var array
-     */
-    protected $fields;
+    protected array $fields;
 
-    /**
-     * @var array
-     */
-    protected $info;
+    protected array $info;
 
-    /**
-     * @var Index
-     */
-    protected $indexResult;
+    protected Index $indexResult;
 
-    /**
-     * @var Schema|null
-     */
-    protected $schemaResult;
+    protected ?Schema $schemaResult;
 
-    /**
-     * @var DocInfo|null;
-     */
-    protected $docResult;
+    protected ?DocInfo $docResult;
 
     /**
      * @var FieldInfo[]|null;
      */
-    protected $fieldsResult;
+    protected ?array $fieldsResult;
 
-    /**
-     * @var Info|null
-     */
-    protected $infoResult;
+    protected ?Info $infoResult;
 
     /**
      * @return Index

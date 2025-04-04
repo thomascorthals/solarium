@@ -268,11 +268,11 @@ abstract class AbstractRange extends AbstractFacet
     }
 
     /**
-     * @param \Solarium\Component\Facet\Pivot|array $pivot
+     * @param Pivot|array $pivot
      *
      * @return self Provides fluent interface
      */
-    public function setPivot($pivot): self
+    public function setPivot(Pivot|array $pivot): self
     {
         $this->setOption('pivot', $pivot);
 
@@ -280,9 +280,9 @@ abstract class AbstractRange extends AbstractFacet
     }
 
     /**
-     * @return \Solarium\Component\Facet\Pivot|array|null
+     * @return Pivot|array|null
      */
-    public function getPivot()
+    public function getPivot(): Pivot|array|null
     {
         return $this->getOption('pivot');
     }
@@ -293,7 +293,7 @@ abstract class AbstractRange extends AbstractFacet
      * {@internal Several options need some extra checks or setup work,
      *            for these options the setters are called.}
      */
-    protected function init()
+    protected function init(): void
     {
         foreach ($this->options as $name => $value) {
             switch ($name) {

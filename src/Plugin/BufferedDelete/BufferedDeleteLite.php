@@ -32,7 +32,7 @@ class BufferedDeleteLite extends AbstractBufferedUpdate
      *
      * @var AbstractDelete[]
      */
-    protected $buffer = [];
+    protected array $buffer = [];
 
     /**
      * Add a document id to delete.

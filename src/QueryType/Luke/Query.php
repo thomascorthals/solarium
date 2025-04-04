@@ -54,10 +54,8 @@ class Query extends BaseQuery
 
     /**
      * Default options.
-     *
-     * @var array
      */
-    protected $options = [
+    protected array $options = [
         'resultclass' => Result::class,
         'documentclass' => Document::class,
         'handler' => 'admin/luke',
@@ -314,7 +312,7 @@ class Query extends BaseQuery
     /**
      * Initialize options.
      */
-    protected function init()
+    protected function init(): void
     {
         foreach ($this->options as $name => $value) {
             switch ($name) {

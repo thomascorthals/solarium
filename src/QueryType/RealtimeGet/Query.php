@@ -27,10 +27,8 @@ class Query extends BaseQuery
 {
     /**
      * Default options.
-     *
-     * @var array
      */
-    protected $options = [
+    protected array $options = [
         'resultclass' => Result::class,
         'documentclass' => Document::class,
         'handler' => 'get',
@@ -39,10 +37,8 @@ class Query extends BaseQuery
 
     /**
      * Document IDs.
-     *
-     * @var array
      */
-    protected $ids = [];
+    protected array $ids = [];
 
     /**
      * Get type for this query.

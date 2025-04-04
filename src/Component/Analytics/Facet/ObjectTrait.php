@@ -25,9 +25,9 @@ trait ObjectTrait
      * @param string            $class
      * @param array|object|null $variable
      *
-     * @return mixed
+     * @return object|null
      */
-    public function ensureObject(string $class, $variable)
+    public function ensureObject(string $class, array|object|null $variable): ?object
     {
         if (null === $variable) {
             return null;

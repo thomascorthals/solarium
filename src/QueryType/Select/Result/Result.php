@@ -22,6 +22,7 @@ use Solarium\Component\Result\Suggester\Result as SuggesterResult;
 use Solarium\Component\Result\TermVector\Result as TermVectorResult;
 use Solarium\Core\Query\DocumentInterface;
 use Solarium\Core\Query\Result\QueryType as BaseResult;
+use Solarium\Exception\UnexpectedValueException;
 
 /**
  * Select query result.
@@ -49,35 +50,27 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
      * Solr numFound.
      *
      * This is NOT the number of document fetched from Solr!
-     *
-     * @var int
      */
-    protected $numfound;
+    protected ?int $numfound;
 
     /**
      * Solr maxscore.
      *
      * Will only be available if 'score' was one of the requested fields in your query
-     *
-     * @var float
      */
-    protected $maxscore;
+    protected ?float $maxscore;
 
     /**
      * Solr nextcursormark.
      *
      * Will only be available if 'cursormark' was set for your query
-     *
-     * @var string
      */
-    protected $nextcursormark;
+    protected ?string $nextcursormark = null;
 
     /**
      * Document instances array.
-     *
-     * @var array
      */
-    protected $documents;
+    protected array $documents;
 
     /**
      * Component results.
@@ -234,7 +227,7 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
      *
      * @param string $key
      *
-     * @throws \Solarium\Exception\UnexpectedValueException
+     * @throws UnexpectedValueException
      *
      * @return mixed
      */
@@ -346,7 +339,7 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
      *
      * This is a convenience method that maps presets to getComponent
      *
-     * @return \Solarium\Component\Result\Analytics\Result|null
+     * @return AnalyticsResult|null
      */
     public function getAnalytics(): ?AnalyticsResult
     {

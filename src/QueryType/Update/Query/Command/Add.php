@@ -25,7 +25,7 @@ class Add extends AbstractCommand
      *
      * @var DocumentInterface[]
      */
-    protected $documents = [];
+    protected array $documents = [];
 
     /**
      * Get command type.

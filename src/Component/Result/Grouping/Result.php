@@ -18,10 +18,8 @@ class Result implements \IteratorAggregate, \Countable
 {
     /**
      * Group results array.
-     *
-     * @var array
      */
-    protected $groups;
+    protected array $groups;
 
     /**
      * Constructor.

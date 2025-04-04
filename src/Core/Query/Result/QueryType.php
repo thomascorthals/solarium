@@ -20,17 +20,13 @@ class QueryType extends Result
 {
     /**
      * Lazy load parsing indicator.
-     *
-     * @var bool
      */
-    protected $parsed = false;
+    protected bool $parsed = false;
 
     /**
      * Response header returned by Solr.
-     *
-     * @var array
      */
-    protected $responseHeader;
+    protected ?array $responseHeader = null;
 
     /**
      * Get Solr status code.

@@ -33,10 +33,8 @@ class Pivot extends AbstractFacet
 
     /**
      * Fields to use.
-     *
-     * @var array
      */
-    protected $fields = [];
+    protected array $fields = [];
 
     /**
      * Get the facet type.
@@ -413,7 +411,7 @@ class Pivot extends AbstractFacet
      * {@internal Options that set a list of fields need additional setup work
      *            because they can be an array or a comma separated string.}
      */
-    protected function init()
+    protected function init(): void
     {
         foreach ($this->options as $name => $value) {
             switch ($name) {

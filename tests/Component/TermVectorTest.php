@@ -11,10 +11,7 @@ use Solarium\QueryType\Select\Query\Query;
 
 class TermVectorTest extends TestCase
 {
-    /**
-     * @var TermVector
-     */
-    protected $termVector;
+    protected TermVector $termVector;
 
     public function setUp(): void
     {

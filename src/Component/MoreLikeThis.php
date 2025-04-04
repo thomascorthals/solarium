@@ -197,7 +197,7 @@ class MoreLikeThis extends AbstractComponent implements MoreLikeThisInterface
      * {@internal Options that set a list of fields need additional setup work
      *            because they can be an array or a comma separated string.}
      */
-    protected function init()
+    protected function init(): void
     {
         foreach ($this->options as $name => $value) {
             switch ($name) {

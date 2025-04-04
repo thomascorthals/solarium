@@ -16,10 +16,8 @@ trait FacetsTrait
 {
     /**
      * Field facets (for stats).
-     *
-     * @var array
      */
-    protected $facets = [];
+    protected array $facets = [];
 
     /**
      * Specify a facet to return in the resultset.

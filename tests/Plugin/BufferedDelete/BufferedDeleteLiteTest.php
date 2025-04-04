@@ -22,15 +22,9 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class BufferedDeleteLiteTest extends TestCase
 {
-    /**
-     * @var string
-     */
-    protected $pluginClass = BufferedDeleteLite::class;
+    protected string $pluginClass = BufferedDeleteLite::class;
 
-    /**
-     * @var BufferedDeleteLite
-     */
-    protected $plugin;
+    protected BufferedDeleteLite $plugin;
 
     public function setUp(): void
     {

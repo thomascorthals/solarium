@@ -10,20 +10,11 @@ use Solarium\Tests\Integration\TestClientFactory;
 
 class PluginTest extends TestCase
 {
-    /**
-     * @var MyPlugin
-     */
-    protected $plugin;
+    protected MyPlugin $plugin;
 
-    /**
-     * @var Client
-     */
-    protected $client;
+    protected Client $client;
 
-    /**
-     * @var array
-     */
-    protected $options;
+    protected array $options;
 
     public function setUp(): void
     {
@@ -49,7 +40,7 @@ class PluginTest extends TestCase
 
 class MyPlugin extends AbstractPlugin
 {
-    public $eventReceived = false;
+    public bool $eventReceived = false;
 
     public function getClient(): Client
     {
@@ -71,7 +62,7 @@ class MyPlugin extends AbstractPlugin
      *
      * Register event listeners
      */
-    protected function initPluginType()
+    protected function initPluginType(): void
     {
         $dispatcher = $this->client->getEventDispatcher();
         if (is_subclass_of($dispatcher, '\Symfony\Component\EventDispatcher\EventDispatcherInterface')) {

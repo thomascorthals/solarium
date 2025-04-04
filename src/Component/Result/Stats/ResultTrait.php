@@ -16,10 +16,8 @@ trait ResultTrait
 {
     /**
      * Stats data.
-     *
-     * @var array
      */
-    protected $stats;
+    protected array $stats;
 
     /**
      * Get min value.

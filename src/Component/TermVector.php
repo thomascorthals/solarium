@@ -289,7 +289,7 @@ class TermVector extends AbstractComponent
      * {@internal Options that set a list of ids or fields need additional setup work
      *            because they can be an array or a comma separated string.}
      */
-    protected function init()
+    protected function init(): void
     {
         foreach ($this->options as $name => $value) {
             switch ($name) {

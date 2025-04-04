@@ -31,10 +31,8 @@ class Highlighting extends AbstractComponent implements HighlightingInterface, Q
 
     /**
      * Array of fields for highlighting.
-     *
-     * @var array
      */
-    protected $fields = [];
+    protected array $fields = [];
 
     /**
      * Get component type.
@@ -283,7 +281,7 @@ class Highlighting extends AbstractComponent implements HighlightingInterface, Q
      * {@internal Options that set a list of fields need additional setup work
      *            because they can be an array or a comma separated string.}
      */
-    protected function init()
+    protected function init(): void
     {
         foreach ($this->options as $name => $value) {
             switch ($name) {

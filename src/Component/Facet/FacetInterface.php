@@ -53,22 +53,22 @@ interface FacetInterface
     /**
      * Add multiple exclude tags.
      *
-     * @param array|string $excludes array or string with comma separated exclude tags
+     * @param string[]|string $excludes array or string with comma separated exclude tags
      *
      * @return self Provides fluent interface
      */
-    public function addExcludes($excludes): self;
+    public function addExcludes(array|string $excludes): self;
 
     /**
      * Set the list of exclude tags.
      *
      * This overwrites any existing exclude tags.
      *
-     * @param array|string $excludes
+     * @param string[]|string $excludes
      *
      * @return self Provides fluent interface
      */
-    public function setExcludes($excludes): self;
+    public function setExcludes(array|string $excludes): self;
 
     /**
      * Remove a single exclude tag.
@@ -89,7 +89,7 @@ interface FacetInterface
     /**
      * Get the list of exclude tags.
      *
-     * @return array
+     * @return string[]
      */
-    public function getExcludes();
+    public function getExcludes(): array;
 }

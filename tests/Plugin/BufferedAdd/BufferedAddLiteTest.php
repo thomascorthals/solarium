@@ -19,15 +19,9 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class BufferedAddLiteTest extends TestCase
 {
-    /**
-     * @var string
-     */
-    protected $pluginClass = BufferedAddLite::class;
+    protected string $pluginClass = BufferedAddLite::class;
 
-    /**
-     * @var BufferedAddLite
-     */
-    protected $plugin;
+    protected BufferedAddLite $plugin;
 
     public function setUp(): void
     {

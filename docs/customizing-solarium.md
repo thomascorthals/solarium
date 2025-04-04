@@ -110,7 +110,7 @@ class BasicDebug extends Solarium\Core\Plugin\AbstractPlugin
     protected $output = array();
 
     // This method is called when the plugin is registered with the client.
-    protected function initPluginType()
+    protected function initPluginType(): void
     {
         $this->start = microtime(true);
 
@@ -128,7 +128,7 @@ class BasicDebug extends Solarium\Core\Plugin\AbstractPlugin
     }
 
     // This method is called if the plugin is removed from the client.
-    public function deinitPlugin()
+    public function deinitPlugin(): void
     {
         $dispatcher = $this->client->getEventDispatcher();
         $dispatcher->removeListener(Events::PRE_CREATE_REQUEST, array($this, 'preCreateRequest'));
@@ -266,7 +266,7 @@ class MyQuery extends Select
 // this very simple plugin that modifies the default querytype mapping
 class QueryCustomizer extends AbstractPlugin
 {
-    public function initPlugin($client, $options)
+    public function initPlugin($client, $options): void
     {
         $client->registerQueryType(
             Client::QUERY_SELECT,

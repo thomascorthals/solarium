@@ -12,9 +12,9 @@ use Solarium\Tests\Support\DataFixtures\Fixtures\MockFixture1;
 
 class FixtureLoaderTest extends TestCase
 {
-    private $fixturePath;
+    private string $fixturePath;
 
-    private $client;
+    private ClientInterface $client;
 
     public function setUp(): void
     {

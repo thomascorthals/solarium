@@ -18,10 +18,8 @@ class Query extends AbstractDelete
 {
     /**
      * Query to delete matching documents.
-     *
-     * @var string
      */
-    protected $query;
+    protected string $query;
 
     /**
      * Constructor.

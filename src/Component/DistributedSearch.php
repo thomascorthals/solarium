@@ -22,24 +22,18 @@ class DistributedSearch extends AbstractComponent
 {
     /**
      * Request to be distributed across all shards in the list.
-     *
-     * @var array
      */
-    protected $shards = [];
+    protected array $shards = [];
 
     /**
      * Requests will be distributed across collections in this list.
-     *
-     * @var array
      */
-    protected $collections = [];
+    protected array $collections = [];
 
     /**
      * Requests will be load balanced across replicas in this list.
-     *
-     * @var array
      */
-    protected $replicas = [];
+    protected array $replicas = [];
 
     /**
      * Get component type.
@@ -380,7 +374,7 @@ class DistributedSearch extends AbstractComponent
      * {@internal Several options need some extra checks or setup work,
      *            for these options the setters are called.}
      */
-    protected function init()
+    protected function init(): void
     {
         foreach ($this->options as $name => $value) {
             switch ($name) {

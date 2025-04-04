@@ -7,12 +7,9 @@ use Solarium\Component\Result\Grouping\Result;
 
 class GroupingTest extends TestCase
 {
-    /**
-     * @var Result
-     */
-    protected $grouping;
+    protected Result $grouping;
 
-    protected $items;
+    protected array $items;
 
     public function setUp(): void
     {

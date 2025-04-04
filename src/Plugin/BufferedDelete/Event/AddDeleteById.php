@@ -19,10 +19,7 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 class AddDeleteById extends Event
 {
-    /**
-     * @var Id
-     */
-    protected $id;
+    protected Id $id;
 
     /**
      * Event constructor.

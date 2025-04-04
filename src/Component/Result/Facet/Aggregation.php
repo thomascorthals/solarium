@@ -16,10 +16,8 @@ class Aggregation implements FacetResultInterface
 {
     /**
      * Value.
-     *
-     * @var float|int
      */
-    protected $value;
+    protected float|int $value;
 
     /**
      * Constructor.
@@ -36,7 +34,7 @@ class Aggregation implements FacetResultInterface
      *
      * @return float|int
      */
-    public function getValue()
+    public function getValue(): float|int
     {
         return $this->value;
     }

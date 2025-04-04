@@ -25,17 +25,13 @@ abstract class AbstractQuery extends Configurable implements QueryInterface
 
     /**
      * Helper instance.
-     *
-     * @var Helper
      */
-    protected $helper;
+    protected ?Helper $helper = null;
 
     /**
      * Extra query params (e.g. dereferenced params).
-     *
-     * @var array
      */
-    protected $params = [];
+    protected array $params = [];
 
     /**
      * Set handler option.

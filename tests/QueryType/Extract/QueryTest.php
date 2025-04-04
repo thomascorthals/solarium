@@ -11,10 +11,7 @@ use Solarium\QueryType\Update\Query\Document;
 
 class QueryTest extends TestCase
 {
-    /**
-     * @var Query
-     */
-    protected $query;
+    protected Query $query;
 
     public function setUp(): void
     {

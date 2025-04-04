@@ -19,11 +19,9 @@ class Field extends Configurable
     use FacetsTrait;
 
     /**
-     * pivot facets for these stats.
-     *
-     * @var array
+     * Pivot facets for these stats.
      */
-    protected $pivots = [];
+    protected array $pivots = [];
 
     /**
      * Get key value.
@@ -147,7 +145,7 @@ class Field extends Configurable
      * {@internal Options that set a list of facet names need additional setup work
      *            because they can be an array or a comma separated string.}
      */
-    protected function init()
+    protected function init(): void
     {
         foreach ($this->options as $name => $value) {
             switch ($name) {

@@ -35,7 +35,7 @@ class NoWaitForResponseRequest extends AbstractPlugin
      *
      * @return self Provides fluent interface
      *
-     * @throws \Solarium\Exception\HttpException
+     * @throws HttpException
      */
     public function preExecuteRequest($event): self
     {
@@ -120,7 +120,7 @@ class NoWaitForResponseRequest extends AbstractPlugin
      *
      * Register event listeners.
      */
-    protected function initPluginType()
+    protected function initPluginType(): void
     {
         $dispatcher = $this->client->getEventDispatcher();
         if (is_subclass_of($dispatcher, '\Symfony\Component\EventDispatcher\EventDispatcherInterface')) {
@@ -135,7 +135,7 @@ class NoWaitForResponseRequest extends AbstractPlugin
      *
      * Unregister event listeners.
      */
-    public function deinitPlugin()
+    public function deinitPlugin(): void
     {
         $dispatcher = $this->client->getEventDispatcher();
         if (is_subclass_of($dispatcher, '\Symfony\Component\EventDispatcher\EventDispatcherInterface')) {

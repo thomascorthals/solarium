@@ -34,7 +34,7 @@ class FacetSet extends RequestBuilder implements ComponentRequestBuilderInterfac
      * @param FacetSetComponent $component
      * @param Request           $request
      *
-     * @throws \Solarium\Exception\UnexpectedValueException
+     * @throws UnexpectedValueException
      *
      * @return Request
      */

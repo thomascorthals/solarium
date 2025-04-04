@@ -16,10 +16,8 @@ class Result implements \IteratorAggregate, \Countable
 {
     /**
      * Fields array.
-     *
-     * @var array
      */
-    protected $fields;
+    protected array $fields;
 
     /**
      * Constructor.
