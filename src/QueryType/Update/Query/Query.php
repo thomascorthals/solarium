@@ -138,9 +138,7 @@ class Query extends BaseQuery
     /**
      * Set the request format for this query.
      *
-     * Use one of the REQUEST_FORMAT_* constants as value.
-     *
-     * @param string $requestFormat
+     * @param self::REQUEST_FORMAT_* $requestFormat
      *
      * @throws InvalidArgumentException
      *
@@ -194,8 +192,8 @@ class Query extends BaseQuery
     /**
      * Create a command instance.
      *
-     * @param string     $type
-     * @param array|null $options
+     * @param self::COMMAND_* $type
+     * @param array|null      $options
      *
      * @throws InvalidArgumentException
      *

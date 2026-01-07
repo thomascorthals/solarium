@@ -430,7 +430,7 @@ class Query extends BaseQuery
      *
      * This parameter is valid only if 'extractonly' is set to true.
      *
-     * @param string $format Use one of the EXTRACT_FORMAT_* constants
+     * @param self::EXTRACT_FORMAT_* $format
      *
      * @return self Provides fluent interface
      *

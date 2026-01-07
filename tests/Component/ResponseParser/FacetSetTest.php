@@ -3,13 +3,19 @@
 namespace Solarium\Tests\Component\ResponseParser;
 
 use PHPUnit\Framework\TestCase;
-use Solarium\Component\Facet\FacetInterface;
 use Solarium\Component\Facet\Field;
 use Solarium\Component\Facet\JsonRange;
 use Solarium\Component\FacetSet;
 use Solarium\Component\ResponseParser\FacetSet as Parser;
 use Solarium\Component\Result\Stats\Result;
+use Solarium\Component\Result\Facet\Buckets as ResultFacetBuckets;
+use Solarium\Component\Result\Facet\Field as ResultFacetField;
+use Solarium\Component\Result\Facet\Interval as ResultFacetInterval;
 use Solarium\Component\Result\Facet\JsonRange as ResultFacetJsonRange;
+use Solarium\Component\Result\Facet\MultiQuery as ResultFacetMultiQuery;
+use Solarium\Component\Result\Facet\Query as ResultFacetQuery;
+use Solarium\Component\Result\Facet\Pivot\Pivot as ResultFacetPivot;
+use Solarium\Component\Result\Facet\Range as ResultFacetRange;
 use Solarium\Exception\RuntimeException;
 use Solarium\QueryType\Select\Query\Query;
 
@@ -17,15 +23,15 @@ class FacetSetTest extends TestCase
 {
     protected Parser $parser;
 
-    protected FacetSet $facetSet;
-
     protected Query $query;
+
+    protected FacetSet $facetSet;
 
     public function setUp(): void
     {
         $this->parser = new Parser();
-
-        $this->facetSet = new FacetSet();
+        $this->query = new Query();
+        $this->facetSet = $this->query->getFacetSet();
         $this->facetSet->createFacet('field', ['local_key' => 'keyA', 'field' => 'fieldA']);
         $this->facetSet->createFacet('query', ['local_key' => 'keyB']);
         $this->facetSet->createFacet(
@@ -42,7 +48,7 @@ class FacetSetTest extends TestCase
         $this->facetSet->createFacet('range', ['local_key' => 'keyD_A', 'pivot' => ['local_key' => 'keyF']]);
         $this->facetSet->createFacet('pivot', ['local_key' => 'keyE', 'fields' => 'cat,price']);
         $this->facetSet->createFacet('pivot', ['local_key' => 'keyF', 'fields' => 'cat']);
-        $this->query = new Query();
+        $this->facetSet->createFacet('interval', ['local_key' => 'keyG']);
     }
 
     public function testParse(): void
@@ -123,26 +129,36 @@ class FacetSetTest extends TestCase
                         ],
                     ],
                 ],
+                'facet_intervals' => [
+                    'keyG' => [
+                        '1-5' => 3,
+                        '6-10' => 4,
+                    ],
+                ],
             ],
         ];
 
         $result = $this->parser->parse($this->query, $this->facetSet, $data);
         $facets = $result->getFacets();
 
-        $this->assertEquals(['keyA', 'keyB', 'keyC', 'keyD', 'keyD_A', 'keyE', 'keyF'], array_keys($facets));
+        $this->assertEquals(['keyA', 'keyB', 'keyC', 'keyD', 'keyD_A', 'keyE', 'keyF', 'keyG'], array_keys($facets));
 
+        $this->assertInstanceOf(ResultFacetField::class, $facets['keyA']);
         $this->assertEquals(
             ['value1' => 12, 'value2' => 3],
             $facets['keyA']->getValues()
         );
 
+        $this->assertInstanceOf(ResultFacetQuery::class, $facets['keyB']);
         $this->assertEquals(23, $facets['keyB']->getValue());
 
+        $this->assertInstanceOf(ResultFacetMultiQuery::class, $facets['keyC']);
         $this->assertEquals(
             ['keyC_A' => 25, 'keyC_B' => 16],
             $facets['keyC']->getValues()
         );
 
+        $this->assertInstanceOf(ResultFacetRange::class, $facets['keyD']);
         $this->assertEquals(
             ['1.0' => 1, '101.0' => 2, '201.0' => 1],
             $facets['keyD']->getValues()
@@ -151,11 +167,9 @@ class FacetSetTest extends TestCase
         $this->assertEquals(3, $facets['keyD']->getBefore());
         $this->assertEquals(4, $facets['keyD']->getBetween());
         $this->assertEquals(5, $facets['keyD']->getAfter());
-        $this->assertEquals(1, \count($facets['keyE']));
 
-        $this->assertEquals(23, $result->getFacet('keyB')->getValue());
-
-        $facet = $result->getFacet('keyD_A')->getPivot()->getPivot()[0];
+        $this->assertInstanceOf(ResultFacetRange::class, $facets['keyD_A']);
+        $facet = $facets['keyD_A']->getPivot()->getPivot()[0];
 
         $this->assertEquals('cat', $facet->getField());
         $this->assertEquals('abc', $facet->getValue());
@@ -168,6 +182,15 @@ class FacetSetTest extends TestCase
         $this->assertEquals('+1YEAR', $range->getGap());
 
         $this->assertEquals(['2018-01-01T00:00:00Z' => 0, '2019-01-01T00:00:00Z' => 1], $range->getValues());
+
+        $this->assertInstanceOf(ResultFacetPivot::class, $facets['keyE']);
+        $this->assertCount(1, $facets['keyE']);
+
+        $this->assertInstanceOf(ResultFacetInterval::class, $facets['keyG']);
+        $this->assertEquals(
+            ['1-5' => 3, '6-10' => 4],
+            $facets['keyG']->getValues()
+        );
     }
 
     public function testParseExtractFromResponse(): void
@@ -219,6 +242,12 @@ class FacetSetTest extends TestCase
                         ],
                     ],
                 ],
+                'facet_intervals' => [
+                    'price' => [
+                        '[0,10]' => 3,
+                        '(10,100]' => 4,
+                    ],
+                ],
             ],
         ];
 
@@ -226,32 +255,36 @@ class FacetSetTest extends TestCase
         $facetSet->setExtractFromResponse(true);
 
         $result = $this->parser->parse($this->query, $facetSet, $data);
-        /** @var FacetInterface[] $facets */
         $facets = $result->getFacets();
 
-        $this->assertEquals(['keyA', 'keyB', 'keyC_A', 'keyC_B', 'keyD', 'cat,price'], array_keys($facets));
+        $this->assertEquals(['keyA', 'keyB', 'keyC_A', 'keyC_B', 'keyD', 'cat,price', 'price'], array_keys($facets));
 
+        $this->assertInstanceOf(ResultFacetField::class, $facets['keyA']);
         $this->assertEquals(
             ['value1' => 12, 'value2' => 3],
             $facets['keyA']->getValues()
         );
 
+        $this->assertInstanceOf(ResultFacetQuery::class, $facets['keyB']);
         $this->assertEquals(
             23,
             $facets['keyB']->getValue()
         );
 
         // As the multiquery facet is a Solarium virtual facet type, it cannot be detected based on Solr response data
+        $this->assertInstanceOf(ResultFacetQuery::class, $facets['keyC_A']);
         $this->assertEquals(
             25,
             $facets['keyC_A']->getValue()
         );
 
+        $this->assertInstanceOf(ResultFacetQuery::class, $facets['keyC_B']);
         $this->assertEquals(
             16,
             $facets['keyC_B']->getValue()
         );
 
+        $this->assertInstanceOf(ResultFacetRange::class, $facets['keyD']);
         $this->assertEquals(
             ['1.0' => 1, '101.0' => 2, '201.0' => 1],
             $facets['keyD']->getValues()
@@ -277,18 +310,43 @@ class FacetSetTest extends TestCase
             $facets['cat,price']
         );
 
+        $this->assertInstanceOf(ResultFacetPivot::class, $facets['cat,price']);
         $pivots = $facets['cat,price']->getPivot();
 
         $this->assertCount(
             2,
             $pivots[0]->getStats()
         );
+
+        $this->assertInstanceOf(ResultFacetInterval::class, $facets['price']);
+        $this->assertEquals(
+            ['[0,10]' => 3, '(10,100]' => 4],
+            $facets['price']->getValues()
+        );
     }
 
     public function testParseNoData(): void
     {
         $result = $this->parser->parse($this->query, $this->facetSet, []);
+
         $this->assertEquals([], $result->getFacets());
+    }
+
+    public function testParseInvalidFacetIdentifier(): void
+    {
+        $data = [
+            'facet_counts' => [
+                'facet_foo' => [
+                    'bar' => 42,
+                ],
+            ],
+        ];
+
+        $facetSet = new FacetSet();
+        $facetSet->setExtractFromResponse(true);
+
+        $this->expectException(RuntimeException::class);
+        $this->parser->parse($this->query, $facetSet, $data);
     }
 
     public function testInvalidFacetType(): void
@@ -433,6 +491,7 @@ class FacetSetTest extends TestCase
 
         $this->assertEquals(['top_genres', 'stock', 'empty_buckets_with_numBuckets', 'price_range'], array_keys($facets));
 
+        $this->assertInstanceOf(ResultFacetBuckets::class, $facets['top_genres']);
         $buckets = $facets['top_genres']->getBuckets();
 
         $this->assertEquals(
@@ -452,15 +511,21 @@ class FacetSetTest extends TestCase
 
         $this->assertTrue(isset($facets['empty_buckets_with_numBuckets']));
 
+        $this->assertInstanceOf(ResultFacetBuckets::class, $result->getFacet('empty_buckets_with_numBuckets'));
+
         $this->assertEquals(12, $result->getFacet('empty_buckets_with_numBuckets')->getNumBuckets());
+
+        $this->assertInstanceOf(ResultFacetBuckets::class, $result->getFacet('stock'));
 
         $this->assertEquals(2, $result->getFacet('stock')->getNumBuckets());
 
         $this->assertNull($facets['top_genres']->getNumBuckets());
 
-        $this->assertEquals('Fantasy', $result->getFacet('top_genres')->getBuckets()[0]->getValue());
+        $this->assertEquals('Fantasy', $facets['top_genres']->getBuckets()[0]->getValue());
 
         $this->assertInstanceOf(ResultFacetJsonRange::class, $result->getFacet('price_range'));
+
+        $this->assertInstanceOf(ResultFacetBuckets::class, $facets['price_range']);
 
         $range_buckets = $facets['price_range']->getBuckets();
 
@@ -554,6 +619,7 @@ class FacetSetTest extends TestCase
 
         $result = $this->parser->parse($this->query, $facetSet, $data);
         $pivot = $result->getFacet($key);
+        $this->assertInstanceOf(ResultFacetPivot::class, $pivot);
 
         $first = $pivot->getPivot()[0];
         $this->assertContainsOnlyInstancesOf(Result::class, $first->getStats()->getResults());
@@ -622,6 +688,7 @@ class FacetSetTest extends TestCase
 
         $result = $this->parser->parse($this->query, $facetSet, $data);
         $pivot = $result->getFacet($key);
+        $this->assertInstanceOf(ResultFacetPivot::class, $pivot);
 
         $first = $pivot->getPivot()[0];
         $this->assertInstanceOf(Result::class, $first->getStats()->getResult('stats_fields'));

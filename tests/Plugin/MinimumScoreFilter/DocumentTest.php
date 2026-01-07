@@ -2,12 +2,18 @@
 
 namespace Solarium\Tests\Plugin\MinimumScoreFilter;
 
+use Solarium\Core\Query\DocumentInterface;
 use Solarium\Plugin\MinimumScoreFilter\Document as FilterDocument;
 use Solarium\QueryType\Select\Result\Document;
 use Solarium\Tests\QueryType\Select\Result\AbstractDocumentTestCase;
 
 class DocumentTest extends AbstractDocumentTestCase
 {
+    /**
+     * @var FilterDocument
+     */
+    protected DocumentInterface $doc;
+
     public function setUp(): void
     {
         $doc = new Document($this->fields);

@@ -15,6 +15,12 @@ use Solarium\Core\Query\QueryInterface;
 use Solarium\Exception\RuntimeException;
 use Solarium\QueryType\ManagedResources\Query\AbstractCommand;
 use Solarium\QueryType\ManagedResources\Query\AbstractQuery as BaseQuery;
+use Solarium\QueryType\ManagedResources\Query\Command\AbstractAdd as Add;
+use Solarium\QueryType\ManagedResources\Query\Command\AbstractCreate as Create;
+use Solarium\QueryType\ManagedResources\Query\Command\Config;
+use Solarium\QueryType\ManagedResources\Query\Command\Delete;
+use Solarium\QueryType\ManagedResources\Query\Command\Exists;
+use Solarium\QueryType\ManagedResources\Query\Command\Remove;
 
 /**
  * Resource.
@@ -24,7 +30,7 @@ class Resource extends AbstractRequestBuilder
     /**
      * Build request for a resource query.
      *
-     * @param QueryInterface|BaseQuery $query
+     * @param QueryInterface&BaseQuery $query
      *
      * @throws RuntimeException
      *
@@ -39,9 +45,9 @@ class Resource extends AbstractRequestBuilder
         $request = parent::build($query);
         // reserved characters in a REST resource name need to be encoded twice to make it through the servlet (SOLR-6853)
         $request->setHandler($query->getHandler().rawurlencode(rawurlencode($query->getName())));
-        if (null !== $query->getCommand()) {
+        if (null !== $command = $query->getCommand()) {
             $request->setContentType(Request::CONTENT_TYPE_APPLICATION_JSON);
-            $this->buildCommand($request, $query->getCommand());
+            $this->buildCommand($request, $command);
         } else {
             // Lists one or all items.
             $request->setMethod(Request::METHOD_GET);
@@ -69,24 +75,28 @@ class Resource extends AbstractRequestBuilder
 
         switch ($command->getType()) {
             case BaseQuery::COMMAND_ADD:
+                /** @var Add $command */
                 if (null === $rawData = $command->getRawData()) {
                     throw new RuntimeException('Missing data for ADD command.');
                 }
                 $request->setRawData($rawData);
                 break;
             case BaseQuery::COMMAND_CONFIG:
+                /** @var Config $command */
                 if (null === $rawData = $command->getRawData()) {
                     throw new RuntimeException('Missing initArgs for CONFIG command.');
                 }
                 $request->setRawData($rawData);
                 break;
             case BaseQuery::COMMAND_CREATE:
+                /** @var Create $command */
                 if (null === $rawData = $command->getRawData()) {
                     throw new RuntimeException('Missing class for CREATE command.');
                 }
                 $request->setRawData($rawData);
                 break;
             case BaseQuery::COMMAND_DELETE:
+                /** @var Delete $command */
                 if (null === $term = $command->getTerm()) {
                     throw new RuntimeException('Missing term for DELETE command.');
                 }
@@ -94,12 +104,14 @@ class Resource extends AbstractRequestBuilder
                 $request->setHandler($request->getHandler().'/'.rawurlencode(rawurlencode($command->getTerm())));
                 break;
             case BaseQuery::COMMAND_EXISTS:
+                /** @var Exists $command */
                 if (null !== $term = $command->getTerm()) {
                     // reserved characters in a REST resource name need to be encoded twice to make it through the servlet (SOLR-6853)
                     $request->setHandler($request->getHandler().'/'.rawurlencode(rawurlencode($command->getTerm())));
                 }
                 break;
             case BaseQuery::COMMAND_REMOVE:
+                /** @var Remove $command */
                 break;
             default:
                 throw new RuntimeException(sprintf('Unsupported command type: %s', $command->getType()));
