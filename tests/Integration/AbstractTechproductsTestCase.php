@@ -23,7 +23,6 @@ use Solarium\Core\Event\Events;
 use Solarium\Core\Query\AbstractDocument;
 use Solarium\Core\Query\AbstractQuery;
 use Solarium\Core\Query\Helper;
-use Solarium\Core\Query\QueryInterface;
 use Solarium\Core\Query\RequestBuilderInterface;
 use Solarium\Core\Query\Status4xxNoExceptionInterface;
 use Solarium\Exception\HttpException;
@@ -55,11 +54,9 @@ use Solarium\QueryType\Luke\Result\Doc\DocInfo as LukeDocInfo;
 use Solarium\QueryType\Luke\Result\Fields\FieldInfo as LukeFieldInfo;
 use Solarium\QueryType\Luke\Result\Index\Index as LukeIndexResult;
 use Solarium\QueryType\Luke\Result\Schema\Schema as LukeSchemaResult;
-use Solarium\QueryType\ManagedResources\Query\AbstractQuery as AbstractManagedResourcesQuery;
 use Solarium\QueryType\ManagedResources\Query\Stopwords as StopwordsQuery;
 use Solarium\QueryType\ManagedResources\Query\Synonyms as SynonymsQuery;
 use Solarium\QueryType\ManagedResources\Query\Synonyms\Synonyms;
-use Solarium\QueryType\ManagedResources\RequestBuilder\Resource as ResourceRequestBuilder;
 use Solarium\QueryType\ManagedResources\Result\Resources\Resource as ResourceResultItem;
 use Solarium\QueryType\ManagedResources\Result\Synonyms\Synonyms as SynonymsResultItem;
 use Solarium\QueryType\Select\Query\Query as SelectQuery;
@@ -207,7 +204,8 @@ abstract class AbstractTechproductsTestCase extends TestCase
     {
         return [
             [AbstractQuery::WT_JSON],
-            [AbstractQuery::WT_PHPS],
+            // no longer supported in Solr 10
+            // [AbstractQuery::WT_PHPS],
         ];
     }
 
@@ -4482,6 +4480,7 @@ abstract class AbstractTechproductsTestCase extends TestCase
 
         // add HTML document
         $extract->setFile(__DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'testhtml.html');
+        $extract->addParam('capture', 'title');
         $doc = $extract->createDocument();
         $doc->id = 'extract-test-2-html';
         $doc->cat = ['extract-test'];
@@ -4505,6 +4504,7 @@ abstract class AbstractTechproductsTestCase extends TestCase
         $file = fopen('php://memory', 'w+');
         fwrite($file, $contents);
         $extract->setFile($file);
+        $extract->addParam('capture', 'title');
         $doc = $extract->createDocument();
         $doc->id = 'extract-test-3-stream';
         $doc->cat = ['extract-test'];
@@ -4527,13 +4527,13 @@ abstract class AbstractTechproductsTestCase extends TestCase
         $this->assertSame(['bar 1'], $document['attr_foo_1']);
         $iterator->next();
         $document = $iterator->current();
-        $this->assertSame('HTML Test Title', $document['title'][0], 'Written document does not contain extracted title');
-        $this->assertMatchesRegularExpression('/^HTML Test Title\s+HTML Test Body$/', trim($document['content'][0]), 'Written document does not contain extracted result');
+        $this->assertSame('HTML Test Title', trim($document['title'][0]), 'Written document does not contain extracted title');
+        $this->assertStringContainsString('HTML Test Body', $document['content'][0], 'Written document does not contain extracted result');
         $this->assertSame(['bar 2'], $document['attr_foo_2']);
         $iterator->next();
         $document = $iterator->current();
-        $this->assertSame('HTML Stream Title', $document['title'][0], 'Written document does not contain extracted title');
-        $this->assertMatchesRegularExpression('/^HTML Stream Title\s+HTML Stream Body$/', trim($document['content'][0]), 'Written document does not contain extracted result');
+        $this->assertSame('HTML Stream Title', trim($document['title'][0]), 'Written document does not contain extracted title');
+        $this->assertStringContainsString('HTML Stream Body', $document['content'][0], 'Written document does not contain extracted result');
         $this->assertSame(['bar 3'], $document['attr_foo_3']);
 
         // now cleanup the documents to have the initial index state
@@ -5129,14 +5129,31 @@ abstract class AbstractTechproductsTestCase extends TestCase
     }
 
     /**
+     * Get the options to use for ManagedResources queries.
+     *
+     * @return array
+     */
+    public function getManagedResourcesQueryOptions(): array
+    {
+        // Solr versions prior to Solr 10 have to percent-encode names and terms twice as a workaround for SOLR-6853
+        if (10 > self::$solrVersion) {
+            return [
+                'useDoubleEncoding' => true,
+            ];
+        }
+
+        return [];
+    }
+
+    /**
      * Get the options to use for ManagedResources Exists commands.
      *
      * @return array
      */
     public function getManagedResourcesExistsCommandOptions(): array
     {
-        // Solr 7 can use HEAD requests because it's unaffected by SOLR-15116 and SOLR-16274
-        if (7 === self::$solrVersion) {
+        // Solr 7 and Solr 10 can use HEAD requests because they're unaffected by SOLR-15116 and SOLR-16274
+        if (7 === self::$solrVersion || 10 <= self::$solrVersion) {
             return [
                 'useHeadRequest' => true,
             ];
@@ -5147,9 +5164,9 @@ abstract class AbstractTechproductsTestCase extends TestCase
 
     public function testManagedStopwords(): void
     {
-        $query = self::$client->createManagedStopwords();
+        $query = self::$client->createManagedStopwords($this->getManagedResourcesQueryOptions());
         $query->setName('english');
-        $term = 'managed_stopword_test';
+        $term = '\'tis';
 
         // Check that stopword list exists
         $exists = $query->createCommand($query::COMMAND_EXISTS, $this->getManagedResourcesExistsCommandOptions());
@@ -5177,13 +5194,13 @@ abstract class AbstractTechproductsTestCase extends TestCase
         // List stopwords
         $result = self::$client->execute($query);
         $this->assertTrue($result->getWasSuccessful());
-        $this->assertContains('managed_stopword_test', $result->getItems());
+        $this->assertContains('\'tis', $result->getItems());
 
         // List added stopword only
         $query->setTerm($term);
         $result = self::$client->execute($query);
         $this->assertTrue($result->getWasSuccessful());
-        $this->assertSame(['managed_stopword_test'], $result->getItems());
+        $this->assertSame(['\'tis'], $result->getItems());
 
         // Delete added stopword
         $delete = $query->createCommand($query::COMMAND_DELETE);
@@ -5209,16 +5226,16 @@ abstract class AbstractTechproductsTestCase extends TestCase
 
     /**
      * @testWith ["testlist", "managed_stopword_test"]
-     *           ["list res-chars :/?#[]@%", "term res-chars :?#[]@%"]
+     *           ["list res-chars :?#[]@", "term res-chars :?#[]@"]
      */
     public function testManagedStopwordsCreation(string $name, string $term): void
     {
         // don't use invalid filename characters in list name on Windows to avoid running into SOLR-15895
         if (self::$isSolrOnWindows) {
-            $name = str_replace([':', '/', '?'], '', $name);
+            $name = str_replace([':', '?'], '', $name);
         }
 
-        $query = self::$client->createManagedStopwords();
+        $query = self::$client->createManagedStopwords($this->getManagedResourcesQueryOptions());
         $query->setName($name.uniqid());
 
         // Check that stopword list doesn't exist
@@ -5295,9 +5312,9 @@ abstract class AbstractTechproductsTestCase extends TestCase
 
     public function testManagedSynonyms(): void
     {
-        $query = self::$client->createManagedSynonyms();
+        $query = self::$client->createManagedSynonyms($this->getManagedResourcesQueryOptions());
         $query->setName('english');
-        $term = 'managed_synonyms_test';
+        $term = 'café';
 
         // Check that synonym map exists
         $exists = $query->createCommand($query::COMMAND_EXISTS, $this->getManagedResourcesExistsCommandOptions());
@@ -5309,7 +5326,7 @@ abstract class AbstractTechproductsTestCase extends TestCase
         $add = $query->createCommand($query::COMMAND_ADD);
         $synonyms = new Synonyms();
         $synonyms->setTerm($term);
-        $synonyms->setSynonyms(['managed_synonym', 'synonym_test']);
+        $synonyms->setSynonyms(['bar', 'pub']);
         $add->setSynonyms($synonyms);
         $query->setCommand($add);
         $result = self::$client->execute($query);
@@ -5332,9 +5349,9 @@ abstract class AbstractTechproductsTestCase extends TestCase
         $success = false;
         /** @var SynonymsResultItem $item */
         foreach ($items as $item) {
-            if ('managed_synonyms_test' === $item->getTerm()) {
+            if ('café' === $item->getTerm()) {
                 $success = true;
-                $this->assertSame(['managed_synonym', 'synonym_test'], $item->getSynonyms());
+                $this->assertSame(['bar', 'pub'], $item->getSynonyms());
             }
         }
         if (!$success) {
@@ -5346,7 +5363,7 @@ abstract class AbstractTechproductsTestCase extends TestCase
         $result = self::$client->execute($query);
         $this->assertTrue($result->getWasSuccessful());
         $this->assertEquals(
-            [new SynonymsResultItem('managed_synonyms_test', ['managed_synonym', 'synonym_test'])],
+            [new SynonymsResultItem('café', ['bar', 'pub'])],
             $result->getItems()
         );
 
@@ -5374,16 +5391,16 @@ abstract class AbstractTechproductsTestCase extends TestCase
 
     /**
      * @testWith ["testmap", "managed_synonyms_test"]
-     *           ["map res-chars :/?#[]@%", "term res-chars :?#[]@%"]
+     *           ["map res-chars :?#[]@", "term res-chars :?#[]@"]
      */
     public function testManagedSynonymsCreation(string $name, string $term): void
     {
         // don't use invalid filename characters in map name on Windows to avoid running into SOLR-15895
         if (self::$isSolrOnWindows) {
-            $name = str_replace([':', '/', '?'], '', $name);
+            $name = str_replace([':', '?'], '', $name);
         }
 
-        $query = self::$client->createManagedSynonyms();
+        $query = self::$client->createManagedSynonyms($this->getManagedResourcesQueryOptions());
         $query->setName($name.uniqid());
 
         // Check that synonym map doesn't exist
@@ -5502,7 +5519,7 @@ abstract class AbstractTechproductsTestCase extends TestCase
      * with an RFC 3986 compliant implementation that uses single percent-encoding.
      *
      * This test checks the behaviour against the latest releases of Solr 8 or Solr 9.
-     * Prior to Solr 8.11.4 Solr 9.7.0 compliant requests failed in a different way.
+     * Prior to Solr 8.11.4 or Solr 9.7.0 compliant requests failed in a different way.
      * This test will fail against versions prior to those releases for the wrong
      * (in the context of what we're testing) reasons.
      *
@@ -5521,13 +5538,11 @@ abstract class AbstractTechproductsTestCase extends TestCase
      */
     public function testManagedResourcesSolr6853(string $resourceType): void
     {
-        if (7 >= self::$solrVersion) {
+        if (7 >= self::$solrVersion || 10 <= self::$solrVersion) {
             $this->expectNotToPerformAssertions();
 
             return;
         }
-
-        $compliantRequestBuilder = new CompliantManagedResourceRequestBuilder();
 
         $query = match ($resourceType) {
             'stopwords' => new StopwordsQuery(),
@@ -5536,10 +5551,7 @@ abstract class AbstractTechproductsTestCase extends TestCase
         $query->setName('english');
         $query->setTerm('test-:/?#[]@% ');
 
-        // Getting the resource with a compliant request builder doesn't work
-        $request = $compliantRequestBuilder->build($query);
-        $this->assertStringEndsWith('/test-%3A%2F%3F%23%5B%5D%40%25%20', $request->getHandler());
-
+        $request = $query->getRequestBuilder()->build($query);
         $response = self::$client->executeRequest($request);
         $responseBody = json_decode($response->getBody(), true);
         $this->assertSame(500, $responseBody['error']['code'], 'Check if SOLR-6853 is fixed.');
@@ -5658,30 +5670,5 @@ class NonControlCharFilteringUpdateRequestBuilder extends XmlUpdateRequestBuilde
         }
 
         return $this->helper;
-    }
-}
-
-/**
- * Request builder for a managed resource that percent-encodes the list/map name
- * and term once, in compliance wiht RFC 3986.
- *
- * It doesn't apply the double percent-encoding required to work around SOLR-6853
- *
- * @see https://issues.apache.org/jira/browse/SOLR-6853
- */
-class CompliantManagedResourceRequestBuilder extends ResourceRequestBuilder
-{
-    public function build(QueryInterface|AbstractManagedResourcesQuery $query): Request
-    {
-        $request = parent::build($query);
-
-        // Undo the double percent-encoding to end up with single encoding
-        $handlerSegments = explode('/', $request->getHandler());
-        foreach ($handlerSegments as &$segment) {
-            $segment = rawurldecode($segment);
-        }
-        $request->setHandler(implode('/', $handlerSegments));
-
-        return $request;
     }
 }

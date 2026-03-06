@@ -305,6 +305,21 @@ htmlFooter();
 
 ```
 
+A note on percent-encoding reserved characters
+----------------------------------------------
+
+Characters that are reserved as delimiters for URI components and subcomponents must
+be percent-encoded if they occur in the name of a synonym list or in synonyms themselves.
+Solarium handles this for you. However, if you're still using a Solr version that's
+affected by [SOLR-6853](https://issues.apache.org/jira/browse/SOLR-6853), you have to
+instruct it to do the percent-encoding twice as a workaround.
+
+```php
+$query = $client->createManagedStopwords(['useDoubleEncoding' => true]);
+```
+
+Keep in mind that Solr may not be able to handle some of these characters regardless.
+
 A note on `HEAD` requests
 -------------------------
 
