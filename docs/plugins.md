@@ -539,8 +539,20 @@ $parallel->addQuery('lowprice', $queryLowPrice);
 $results = $parallel->execute();
 echo 'Execution time for parallel execution of two queries: '.round(microtime(true) - $start, 3).' s';
 echo '<hr/>';
-echo 'In stock: '.$results['instock']->getNumFound().'<br/>';
-echo 'Low price: '.$results['lowprice']->getNumFound().'<br/>';
+// On failure an HttpException is returned instead of thrown so as not to interrupt the other queries.
+// Instead of catching them you have to check the type of each item in the results array.
+if ($results['instock'] instanceof Solarium\Exception\HttpException) {
+    echo 'Something went wrong with the "instock" query:<br/>';
+    echo $results['instock']->getMessage();
+} else {
+    echo 'In stock: '.$results['instock']->getNumFound().'<br/>';
+}
+if ($results['lowprice'] instanceof Solarium\Exception\HttpException) {
+    echo 'Something went wrong with the "lowprice" query:<br/>';
+    echo $results['lowprice']->getMessage();
+} else {
+    echo 'Low price: '.$results['lowprice']->getNumFound().'<br/>';
+}
 
 htmlFooter();
 
