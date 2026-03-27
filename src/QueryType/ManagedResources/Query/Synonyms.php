@@ -46,6 +46,8 @@ class Synonyms extends AbstractQuery
 
     /**
      * Command types.
+     *
+     * @var array<self::COMMAND_*, class-string>
      */
     protected array $commandTypes = [
         self::COMMAND_ADD => Add::class,
@@ -59,7 +61,7 @@ class Synonyms extends AbstractQuery
     /**
      * Get query type.
      *
-     * @return string
+     * @return Client::QUERY_MANAGED_SYNONYMS
      */
     public function getType(): string
     {
