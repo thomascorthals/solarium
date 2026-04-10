@@ -11,6 +11,7 @@ namespace Solarium\QueryType\ManagedResources\Query;
 
 use Solarium\Core\Client\Client;
 use Solarium\Core\Query\ResponseParserInterface;
+use Solarium\QueryType\ManagedResources\Query\AbstractCommand;
 use Solarium\QueryType\ManagedResources\Query\Command\Config;
 use Solarium\QueryType\ManagedResources\Query\Command\Delete;
 use Solarium\QueryType\ManagedResources\Query\Command\Exists;
@@ -33,7 +34,7 @@ class Synonyms extends AbstractQuery
     /**
      * Default result class if no command is set.
      *
-     * @var class-string
+     * @var class-string<SynonymMappings>
      */
     protected string $defaultResultClass = SynonymMappings::class;
 
@@ -49,7 +50,7 @@ class Synonyms extends AbstractQuery
     /**
      * Command types.
      *
-     * @var array<self::COMMAND_*, class-string>
+     * @var array<self::COMMAND_*, class-string<AbstractCommand>>
      */
     protected array $commandTypes = [
         self::COMMAND_ADD => Add::class,
