@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Solr 10 support
 - PHP 8.5 support
 - Solarium\QueryType\Extract\Query::setStreamType()
+- Solarium\QueryType\Server\Metrics
 
 ### Fixed
 - Solarium\QueryType\Server\CoreAdmin\Result\Result::getResponse() always returns a Solarium\Core\Client\Response object, even if the response data contains a field named `"response"`
