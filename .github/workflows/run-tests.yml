@@ -1,5 +1,7 @@
 name: Run Tests
 
+permissions: {}
+
 on:
     push:
 
@@ -34,6 +36,8 @@ jobs:
 
             - name: Checkout solarium
               uses: actions/checkout@v6
+              with:
+                persist-credentials: false
 
             - name: Checkout solr 7.7
               if: matrix.solr == 7
@@ -42,6 +46,7 @@ jobs:
                 repository: apache/lucene-solr
                 ref: branch_7_7
                 path: lucene-solr
+                persist-credentials: false
 
             - name: Checkout solr 8.11
               if: matrix.solr == 8
@@ -50,6 +55,7 @@ jobs:
                 repository: apache/lucene-solr
                 ref: branch_8_11
                 path: lucene-solr
+                persist-credentials: false
 
             - name: Checkout solr 9.10
               if: matrix.solr == 9
@@ -58,6 +64,7 @@ jobs:
                 repository: apache/solr
                 ref: branch_9_10
                 path: lucene-solr
+                persist-credentials: false
 
             - name: Checkout solr 10.0
               if: matrix.solr == 10
@@ -66,6 +73,7 @@ jobs:
                 repository: apache/solr
                 ref: branch_10_0
                 path: lucene-solr
+                persist-credentials: false
 
             - name: Start Solr ${{ matrix.solr }} in ${{ matrix.mode }} mode
               run: |
@@ -113,6 +121,8 @@ jobs:
         steps:
             - name: Checkout solarium
               uses: actions/checkout@v6
+              with:
+                persist-credentials: false
 
             - name: Download coverage reports from tests
               uses: actions/download-artifact@v8
