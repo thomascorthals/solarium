@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Solarium\QueryType\Server\Metrics
+
 ### Changed
 - Solarium\Component\Result\Grouping\ValueGroup::getValue() returns `string|float|int|bool|null` according to field type or function return type instead of always coercing to `?string`
 
@@ -14,7 +17,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Solr 10 support
 - PHP 8.5 support
 - Solarium\QueryType\Extract\Query::setStreamType()
-- Solarium\QueryType\Server\Metrics
 
 ### Fixed
 - Solarium\QueryType\Server\CoreAdmin\Result\Result::getResponse() always returns a Solarium\Core\Client\Response object, even if the response data contains a field named `"response"`
