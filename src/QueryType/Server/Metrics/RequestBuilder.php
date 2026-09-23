@@ -14,7 +14,7 @@ use Solarium\Core\Query\AbstractRequestBuilder as BaseRequestBuilder;
 use Solarium\Core\Query\QueryInterface;
 
 /**
- * Build a matrics request.
+ * Build a metrics request.
  */
 class RequestBuilder extends BaseRequestBuilder
 {
