@@ -13,6 +13,8 @@ $lukeQuery->setShow($lukeQuery::SHOW_INDEX);
 
 $result = $client->luke($lukeQuery);
 
+echo $result->getResponse()->getBody();
+
 $index = $result->getIndex();
 
 echo '<h1>index</h1>';
