@@ -193,6 +193,17 @@ try {
         $skipForSolrVersion[] = '2.3.2-mlt-stream.php';
     }
 
+    if (9 > $solrVersion) {
+        $skipForSolrVersion[] = '2.11.1.1-luke-query-index-details-per-shard.php';
+        $skipForSolrVersion[] = '2.11.2.2-luke-query-field-details-per-shard.php';
+    }
+
+    // examples that can't be run in server mode
+    $skipForServer = [
+        '2.11.1.1-luke-query-index-details-per-shard.php',
+        '2.11.2.2-luke-query-field-details-per-shard.php',
+    ];
+
     // examples that can't be run in cloud mode
     $skipForCloud = [
         '2.1.5.6-grouping-by-function.php',
@@ -203,14 +214,6 @@ try {
         '2.11.4-luke-query-doc.php',
         '7.1-plugin-loadbalancer.php',
     ];
-
-    // @todo Update Luke response parser for changes in SOLR-8127
-    if (9 === $solrVersion) {
-        $skipForCloud[] = '2.11.1-luke-query-index.php';
-        $skipForCloud[] = '2.11.2-luke-query-all-fields.php';
-        $skipForCloud[] = '2.11.2.1-luke-query-field-details.php';
-        $skipForCloud[] = '2.11.3-luke-query-schema.php';
-    }
 
     // examples that can't be run in this PHP version
     $skipForPHPVersion = [];
@@ -227,6 +230,8 @@ try {
                 echo 'Could not be run against the techproducts example.';
             } elseif (in_array($example, $skipForSolrVersion)) {
                 printf('Could not be run against Solr %d.', $solrVersion);
+            } elseif ('server' === $solr_mode && in_array($example, $skipForServer)) {
+                echo 'Could not be run in server mode.';
             } elseif ('solrcloud' === $solr_mode && in_array($example, $skipForCloud)) {
                 echo 'Could not be run in cloud mode.';
             } elseif (in_array($example, $skipForPHPVersion)) {
