@@ -4629,6 +4629,8 @@ abstract class AbstractTechproductsTestCase extends TestCase
 
         $extract = self::$client->createExtract();
         $extract->setUprefix('attr_');
+        // defaults to "ignore_" in solrconfig.xml but ignored fields were broken when Solr 10.1 was released
+        $extract->addFieldMapping('div', 'attr_div');
         $extract->setCommit(true);
         $extract->setCommitWithin(0);
         $extract->setOmitHeader(false);
